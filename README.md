@@ -1,7 +1,7 @@
 # glomeruli_detection
-本サイトでは Faster RCNN を用いて Whole Slide Image から糸球体を検出する検出器の一例を紹介します。
+本サイトでは Whole Slide Image から糸球体を検出する検出器の一例を紹介します。
 
-detection of glomeruli using faster rcnn
+本手法では [Faster RCNN 手法](https://arxiv.org/abs/1506.01497)を用いており、その実装には[Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection)を利用しています。
 
 ## set up
 
@@ -25,15 +25,15 @@ detection of glomeruli using faster rcnn
 
     * [OpenSlide](https://openslide.org/)
 
-## Quick Start: Detecting Glomeruli from sample WSIs.
+## Quick Start:
 
   * [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)
 
-    ここで提供される学習済みモデルとサンプルWSIを用いて、検出処理を行う手順を説明します。
+    提供する学習済みモデルとサンプルWSIを用いて、検出処理を行う手順を説明します。
 
 ## trained models
 
-  We Provide detection models trained on our data sets.
+  We Provide detection models trained on our data sets.（ダウンロードリンクを追加する）
 
   You can un-tar each tar.gz file via, e.g.,:
 
@@ -43,9 +43,9 @@ detection of glomeruli using faster rcnn
 
 ## test data
 
-  各染色の Whole Slide Image が  "test_data" ディレクトリにあります。それらの画像は学習に用いていません。
+  テスト用のWhole Slide Image をリンク(ダウンロードリンクを追加する)からダウンロードすることができます。それらの画像は学習に用いていません。
 
-  それらのデータを用いて糸球体検出処理とその結果がどのようなものかを確認することができます。
+  それらのデータを用いて糸球体検出処理とその結果がどのようなものかを確認することができます。実行方法については[Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)を参照してください。
 
 ## Program List
 * 糸球体検出処理用プログラム

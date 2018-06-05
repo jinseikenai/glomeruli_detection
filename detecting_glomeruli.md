@@ -11,7 +11,7 @@
 
   ```
   python detect_glomus_test.py \
-      --target_list ${TARGET_LIST_PATH} \
+      --target_list ${TARGET_LIST} \
       --target_dir ${DATA_PATH} \
       --data_category ${STAINING} \
       --output_dir ${OUTPUT_DIR}
