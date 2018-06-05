@@ -7,7 +7,7 @@
   2. [重複領域のマージ](#merge)
   3. [検出結果の評価と可視化](#visualize)
 
-## <a name='detection'>糸球体検出処理</a>
+## <a name='detection'>1. 糸球体検出処理</a>
 
   ```
   python detect_glomus_test.py \
@@ -22,7 +22,7 @@
       --model ${MODEL_DIR_PATH}
   ```
 
-## <a name='merge'>重複した糸球体候補領域のマージ処理</a>
+## <a name='merge'>2. 重複した糸球体候補領域のマージ処理</a>
 
   ```
   python merge_overlaped_glomus.py \
@@ -35,7 +35,7 @@
       --overlap_threshold 0.35
   ```
 
-## <a name='visualize'>検出結果の評価と可視化</a>
+## <a name='visualize'>3. 検出結果の評価と可視化</a>
 
   ```
   python -u eval_recall_precision_test.py \

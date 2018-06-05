@@ -1,9 +1,12 @@
 # glomeruli_detection
-Faster RCNN を用いた糸球体検出器
+本サイトでは Faster RCNN を用いて Whole Slide Image から糸球体を検出する検出器の一例を紹介します。
 
 detection of glomeruli using faster rcnn
 
 ## set up
+
+以下の手順で set up してください。
+
 1. Installing Tensorflow and Tensorflow Object Detection API
 
     Please run through the [installation instructions](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md) to install *"Tensorflow Object Detection API"* and all it dependencies.
@@ -40,7 +43,7 @@ detection of glomeruli using faster rcnn
 
 ## test data
 
-  各染色の Whole Slide Image が  "test_data" ディレクトリにあります。それらの画像は学習済みモデルの学習に用いていません。
+  各染色の Whole Slide Image が  "test_data" ディレクトリにあります。それらの画像は学習に用いていません。
 
   それらのデータを用いて糸球体検出処理とその結果がどのようなものかを確認することができます。
 
@@ -54,9 +57,12 @@ detection of glomeruli using faster rcnn
   * 学習実行処理呼び出しプログラム: my_train.py
 
 ## 追加学習
+
+  我々が提供する学習済みモデルを元に、自分たちのデータを追加学習することができます。追加学習を行う方法については、以下のメモと my_train.py, my_trainer.py の内容を参照してください。
+
 1. Configuration
 
-  config/glomerulus_train.config と config/input.config の *PATH_TO_BE_CONFIGURED* を環境に合わせて適切に設定する。
+  config/glomerulus_train.config と config/input.config の *PATH_TO_BE_CONFIGURED* を環境に合わせて適切に設定してください。
 　
 1. 学習実行
 
