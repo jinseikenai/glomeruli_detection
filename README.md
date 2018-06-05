@@ -13,7 +13,7 @@
 
 2. Download our tools
 
-    検出処理プログラムとサンプルデータ、学習済みモデルをダウンロードしてください。
+    検出処理プログラムをダウンロードしてください。
 
     ```
     git clone https://github.com/jinseikenai/glomeruli_detection.git
@@ -54,7 +54,7 @@
   * 検出処理結果確認プログラム: eval_recall_precision_test.py
 
 * 学習用プログラム
-  * 学習実行処理呼び出しプログラム: my_train.py
+  * 学習実行処理呼び出しプログラム: my_train.py, my_trainer.py
 
 ## 追加学習
 
