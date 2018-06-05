@@ -26,6 +26,8 @@ detection of glomeruli using faster rcnn
 
   * [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)
 
+    ここで提供される学習済みモデルとサンプルWSIを用いて、検出処理を行う手順を説明します。
+
 ## trained models
 
   We Provide detection models trained on our data sets.
@@ -53,7 +55,8 @@ detection of glomeruli using faster rcnn
 
 ## 追加学習
 1. Configuration
-  * config/glomerulus_train.config と config/input.config の *PATH_TO_BE_CONFIGURED* を環境に合わせて適切に設定する。
+
+  config/glomerulus_train.config と config/input.config の *PATH_TO_BE_CONFIGURED* を環境に合わせて適切に設定する。
 　
 1. 学習実行
 

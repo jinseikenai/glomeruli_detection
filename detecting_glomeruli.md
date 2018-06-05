@@ -1,7 +1,13 @@
 # Quick Start: Detecting Glomeruli
-  ここで提供する学習済みモデルとサンプルWSIを用いた検出処理手順を説明します。
+  ここで提供される学習済みモデルとサンプルWSIを用いて、検出処理を行う手順を説明します。
 
-## 糸球体検出処理
+  検出処理は以下の手順で行われます。
+
+  1. [糸球体検出処理](#detection)
+  2. [重複領域のマージ](#merge)
+  3. [検出結果の評価と可視化](#visualize)
+
+## <a name='detection'>糸球体検出処理</a>
 
   ```
   python detect_glomus_test.py \
@@ -16,7 +22,7 @@
       --model ${MODEL_DIR_PATH}
   ```
 
-## 重複した糸球体候補領域のマージ処理
+## <a name='merge'>重複した糸球体候補領域のマージ処理</a>
 
   ```
   python merge_overlaped_glomus.py \
@@ -29,7 +35,7 @@
       --overlap_threshold 0.35
   ```
 
-## 検出結果の評価と可視化
+## <a name='visualize'>検出結果の評価と可視化</a>
 
   ```
   python -u eval_recall_precision_test.py \
