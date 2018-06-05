@@ -4,21 +4,32 @@ Faster RCNN を用いた糸球体検出器
 detection of glomeruli using faster rcnn
 
 ## set up
-1. Installing Tensorflow and Tensorflow Object Detection API
-  * Please run through the [installation instructions](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md) to install *"Tensorflow Object Detection API"* and all it dependencies.
+  1. Installing Tensorflow and Tensorflow Object Detection API
 
-2. Download our tools
-  * 検出処理プログラムとサンプルデータ、学習済みモデルをダウンロードする。
+
+    Please run through the [installation instructions](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md) to install *"Tensorflow Object Detection API"* and all it dependencies.
+
+  1. Download our tools
+
+
+    検出処理プログラムとサンプルデータ、学習済みモデルをダウンロードする。
+
 
     ```
     git clone https://github.com/jinseikenai/glomeruli_detection.git
     ```
 
-3. dependencies
-  * Our Glomeruli Detection Programs depends on the following libraries:
-    * [OpenSlide](https://openslide.org/)
+  1. dependencies
+
+
+    Our Glomeruli Detection Programs depends on the following libraries:
+
+
+      * [OpenSlide](https://openslide.org/)
 
 ## Quick Start: Detecting Glomeruli from sample WSIs.
+
+  * [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)
 
 ## trained models
 
