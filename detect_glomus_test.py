@@ -267,7 +267,7 @@ if __name__ == '__main__':
     TRAIN_SET = body.replace('test', 'train')
     staining_dir = get_staining_type(args.data_category)
     TRAIN_MODEL = args.model
-    PATH_TO_CKPT = os.path.join('/home/simamoto/mnt/jinroot/99_WS/98_simamoto_work/10_model/', TRAIN_MODEL, 'frozen_inference_graph.pb')
+    PATH_TO_CKPT = os.path.join(args.model, TRAIN_MODEL, 'frozen_inference_graph.pb')
     '''Load Tensorflow Model into Memory'''
     detection_graph = tf.Graph()
     with detection_graph.as_default():
