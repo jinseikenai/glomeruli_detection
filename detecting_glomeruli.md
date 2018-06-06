@@ -1,13 +1,13 @@
 # Quick Start: Detecting Glomeruli
-  ここで提供される学習済みモデルとサンプルWSIを用いて、検出処理を行う手順を説明します。
+  Using models and data provided [here](https://github.com/jinseikenai/glomeruli_detection#trained_models), you could confirm the glomeruli detection programs and its result.
 
-  検出処理は以下の手順で行われます。
+  The detection procedure is as follows.
 
-  1. [糸球体検出処理](#detection)
-  2. [重複領域のマージ](#merge)
-  3. [検出結果の評価と可視化](#visualize)
+  1. [Glomeruli Detection](#detection)
+  2. [Merging Overlapping Regions](#merge)
+  3. [Evaluation and Visualization](#visualize)
 
-## <a name='detection'>1. 糸球体検出処理</a>
+## <a name='detection'>1. Glomeruli Detection</a>
 
   ```
   python detect_glomus_test.py \
@@ -31,7 +31,7 @@
   * --overlap_ratio には sliding window 方式で糸球体検出領域をスライドさせる際の重複させる窓の領域を指定します。1.0未満の正の数値を指定してください。
   * --conf_threshold には検出結果に採用する最低限の confidence threshold を指定します。この値以下の confidence の糸球体領域候補は検出結果に含まれなくなります。1.0以下の正の数値を指定してください。
 
-## <a name='merge'>2. 重複した糸球体候補領域のマージ処理</a>
+## <a name='merge'>2. Merging Overlapping Regions</a>
 
   ```
   python merge_overlaped_glomus.py \
@@ -44,7 +44,7 @@
       --overlap_threshold 0.35
   ```
 
-## <a name='visualize'>3. 検出結果の評価と可視化</a>
+## <a name='visualize'>3. Evaluation and Visualization</a>
 
   ```
   python -u eval_recall_precision_test.py \

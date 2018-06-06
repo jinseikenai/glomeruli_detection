@@ -37,7 +37,7 @@ Please set up by the following procedure.
 
     We will explain the procedure to detect glomeruli using the provided learned models and sample WSIs.
 
-## trained models
+## <a name=trained_models>trained models</a>
 
   We Provide detection models trained on our data sets.
 
@@ -62,9 +62,9 @@ Please set up by the following procedure.
 
 ## Program List
 * Glomeruli Detection Programs
-  * detection : detect_glomus_test.py
-  * merging overlapping regions : merge_overlaped_glomus.py
-  * result evaluation and visualization: eval_recall_precision_test.py
+  1. detection : detect_glomus_test.py
+  2. merging overlapping regions : merge_overlaped_glomus.py
+  3. evaluation and visualization: eval_recall_precision_test.py
 
 * Glomeruli Learning Programs
   * learning: my_train.py, my_trainer.py
@@ -78,7 +78,7 @@ Please set up by the following procedure.
 
 1. Configuration
 
-  Please configure *"PATH_TO_BE_CONFIGURED*" of *"config/glomerulus_train.config"* and *"config/input.config*" appropriately to your environment.
+  Please configure a variable *"PATH_TO_BE_CONFIGURED*" in *"config/glomerulus_train.config"* and *"config/input.config*" appropriately to your environment.
 
 
 2. Execution
