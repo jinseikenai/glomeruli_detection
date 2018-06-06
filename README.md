@@ -1,5 +1,5 @@
 # Glomeruli Detector
-**This site introduces an example of a detector that detects glomeruli from Whole Slide Image.**
+**This site introduces an example of a glomeruli detector that detects glomeruli from Whole Slide Images.**
 
 We uses the [Faster RCNN](https://arxiv.org/abs/1506.01497) method and the [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) for its implementation.
 
@@ -29,7 +29,7 @@ Please set up by the following procedure.
 
   * [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)
 
-    提供する学習済みモデルとサンプルWSIを用いて、検出処理を行う手順を説明します。
+    We will explain the procedure to detect glomeruli using the provided learned models and sample WSIs.
 
 ## trained models
 
