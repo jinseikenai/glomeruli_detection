@@ -33,7 +33,12 @@
 
 ## trained models
 
-  We Provide detection models trained on our data sets.（ダウンロードリンクを追加する）
+  We Provide detection models trained on our data sets.
+
+  * [pas](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pas.train1.tar.gz)
+  * [pam](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pam.train1.tar.gz)
+  * [mt](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/mt.train1.tar.gz)
+  * [azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/azan.train1.tar.gz)
 
   You can un-tar each tar.gz file via, e.g.,:
 
@@ -43,7 +48,7 @@
 
 ## test data
 
-  テスト用のWhole Slide Image をリンク(ダウンロードリンクを追加する)からダウンロードすることができます。それらの画像は学習に用いていません。
+  テスト用のWhole Slide Image を[link](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/test_data.tar.gz)からダウンロードすることができます。それらの画像は学習に用いていません。
 
   それらのデータを用いて糸球体検出処理とその結果がどのようなものかを確認することができます。実行方法については[Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)を参照してください。
 
