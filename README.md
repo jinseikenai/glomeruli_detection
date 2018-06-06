@@ -25,6 +25,12 @@ Please set up by the following procedure.
 
     * [OpenSlide](https://openslide.org/)
 
+    Operation Environment：　We confirmed the operation in the following environment.
+
+    * python 3.5
+    * tensorflow 1.4.1
+
+
 ## Quick Start:
 
   * [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)
@@ -48,18 +54,20 @@ Please set up by the following procedure.
 
 ## test data
 
-  テスト用のWhole Slide Image を[link](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz)からダウンロードすることができます。それらの画像は学習に用いていません。
+  Whole Slide Images for testing can be download from [here](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz).
+  These data are not included in the training data.
 
-  それらのデータを用いて糸球体検出処理とその結果がどのようなものかを確認することができます。実行方法については[Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)を参照してください。
+  Using these data, you could confirm the glomeruli detection programs and its result.
+  Please see [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for how to do it.
 
 ## Program List
-* 糸球体検出処理用プログラム
-  * 糸球体検出処理プログラム: detect_glomus_test.py
-  * 検出処理結果マージプログラム: merge_overlaped_glomus.py
-  * 検出処理結果確認プログラム: eval_recall_precision_test.py
+* Glomeruli Detection Programs
+  * detection : detect_glomus_test.py
+  * merging overlapping regions : merge_overlaped_glomus.py
+  * result evaluation and visualization: eval_recall_precision_test.py
 
-* 学習用プログラム
-  * 学習実行処理呼び出しプログラム: my_train.py, my_trainer.py
+* Glomeruli Learning Programs
+  * learning: my_train.py, my_trainer.py
 
 ## 追加学習
 
