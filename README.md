@@ -41,10 +41,10 @@ Please set up by the following procedure.
 
   We Provide detection models trained on our data sets.
 
-  * [pas](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz)
-  * [pam](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz)
-  * [mt](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz)
-  * [azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz)
+  * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz)
+  * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz)
+  * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz)
+  * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz)
 
   You can un-tar each tar.gz file via, e.g.,:
 
@@ -69,17 +69,21 @@ Please set up by the following procedure.
 * Glomeruli Learning Programs
   * learning: my_train.py, my_trainer.py
 
-## 追加学習
+## Transfer Learning or Additional Learning
 
-  我々が提供する学習済みモデルを元に、自分たちのデータを追加学習することができます。追加学習を行う方法については、以下のメモと my_train.py, my_trainer.py の内容を参照してください。
+  Based on our learning model, you could do your transfer learning or additional learning.
+
+  For reference information on how to do learning, Please refer to the following notes, and my_train.py and my_trainer.py.
+
 
 1. Configuration
 
-  config/glomerulus_train.config と config/input.config の *PATH_TO_BE_CONFIGURED* を環境に合わせて適切に設定してください。
-　
-1. 学習実行
+  Please configure *"PATH_TO_BE_CONFIGURED*" of *"config/glomerulus_train.config"* and *"config/input.config*" appropriately to your environment.
 
-  以下のようにして学習を実行することが出来ます。ここで、${TRAIN_DATA_PATH}には追加学習を行う学習データへのパスを指定し、${CONFIG_PATH}に config ファイルがあるディレクトリへのパスを指定してください。${GPU}には使用するGPUの番号リストを指定してください。
+
+2. Execution
+
+  You could execute learning with the following command.
 
   ```
   python my_train.py --logtostderr \
@@ -90,11 +94,13 @@ Please set up by the following procedure.
     --gpu_list=${GPU}
   ```
 
-  * ${TRAIN_DATA_PATH}には学習結果ファイルを出力するディレクトリを指定します。
-  * ${CONFIG_PATH}には以下の configuration file へのパスを指定します。それぞれ別の場所を指定して大丈夫です。
+  * Set the path of learning data to ${TRAIN_DATA_PATH}
+  * Set the path of configuration files to ${CONFIG_PATH}.
+  * Set the path of directory of output files to ${TRAIN_DATA_PATH}.
+  * Set the path of configuration files to ${CONFIG_PATH}. You could specify different paths for each.
     * glomerulus_model.config
     * glomerulus_train.config
     * input.config
-  * 使用する GPU を指定します。"--gpu_list=0,1" or "--gpu_list=1" のように指定します。
+  * Set the GPU list you can use to ${GPU} like "--gpu_list=0,1" or "--gpu_list=1".
 
 
