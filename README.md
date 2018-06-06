@@ -1,11 +1,11 @@
-# glomeruli_detection
-本サイトでは Whole Slide Image から糸球体を検出する検出器の一例を紹介します。
+# Glomeruli Detector
+**This site introduces an example of a detector that detects glomeruli from Whole Slide Image.**
 
-本手法では [Faster RCNN 手法](https://arxiv.org/abs/1506.01497)を用いており、その実装には[Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection)を利用しています。
+We uses the [Faster RCNN](https://arxiv.org/abs/1506.01497) method and the [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) for its implementation.
 
 ## set up
 
-以下の手順で set up してください。
+Please set up by the following procedure.
 
 1. Installing Tensorflow and Tensorflow Object Detection API
 
@@ -13,7 +13,7 @@
 
 2. Download our tools
 
-    検出処理プログラムをダウンロードしてください。
+    Please download our glomeruli detection programs.
 
     ```
     git clone https://github.com/jinseikenai/glomeruli_detection.git
@@ -21,7 +21,7 @@
 
 1. dependencies
 
-    我々の糸球体検出付プログラムでは以下のライブラリを用いています。以下のライブラリをインストールしてください。Our Glomeruli Detection Programs depends on the following libraries:
+    Our glomeruli detection programs depends on the following libraries. Please install the following libraries.
 
     * [OpenSlide](https://openslide.org/)
 
@@ -35,10 +35,10 @@
 
   We Provide detection models trained on our data sets.
 
-  * [pas](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pas_train1.tar.gz)
-  * [pam](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pam_train1.tar.gz)
-  * [mt](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/mt_train1.tar.gz)
-  * [azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/azan_train1.tar.gz)
+  * [pas](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz)
+  * [pam](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz)
+  * [mt](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz)
+  * [azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz)
 
   You can un-tar each tar.gz file via, e.g.,:
 
@@ -48,7 +48,7 @@
 
 ## test data
 
-  テスト用のWhole Slide Image を[link](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/test_data.tar.gz)からダウンロードすることができます。それらの画像は学習に用いていません。
+  テスト用のWhole Slide Image を[link](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz)からダウンロードすることができます。それらの画像は学習に用いていません。
 
   それらのデータを用いて糸球体検出処理とその結果がどのようなものかを確認することができます。実行方法については[Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)を参照してください。
 
