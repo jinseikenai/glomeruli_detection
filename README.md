@@ -41,10 +41,17 @@ Please set up by the following procedure.
 
   We Provide detection models trained on our data sets.
 
+<<<<<<< HEAD
   * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz)
   * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz)
   * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz)
   * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz)
+=======
+  * [pas](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pas.train1.tar.gz)
+  * [pam](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pam.train1.tar.gz)
+  * [mt](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/mt.train1.tar.gz)
+  * [azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/azan.train1.tar.gz)
+>>>>>>> parent of b01a087... minor modification of document
 
   You can un-tar each tar.gz file via, e.g.,:
 
@@ -94,6 +101,7 @@ Please set up by the following procedure.
     --gpu_list=${GPU}
   ```
 
+<<<<<<< HEAD
   * Set the path of learning data to ${TRAIN_DATA_PATH}
   * Set the path of configuration files to ${CONFIG_PATH}.
   * Set the path of directory of output files to ${TRAIN_DATA_PATH}.
@@ -103,4 +111,6 @@ Please set up by the following procedure.
     * input.config
   * Set the GPU list you can use to ${GPU} like "--gpu_list=0,1" or "--gpu_list=1".
 
+=======
+>>>>>>> parent of b01a087... minor modification of document
 
