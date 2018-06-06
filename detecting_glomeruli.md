@@ -11,14 +11,14 @@
 
   ```
   python detect_glomus_test.py \
-      --target_list ${TARGET_LIST} \
-      --target_dir ${DATA_PATH} \
-      --data_category ${STAINING} \
-      --output_dir ${OUTPUT_DIR}
-      --output_file_ext ${FILE_EXTENTION} \
-      --model ${MODEL_PATH} \
-      --window_size 2000 \
-      --overlap_ratio 0.1 \
+      --target_list=${TARGET_LIST} \
+      --target_dir=${DATA_PATH} \
+      --data_category=${STAINING} \
+      --output_dir=${OUTPUT_DIR}
+      --output_file_ext=${FILE_EXTENTION} \
+      --model=${MODEL_PATH} \
+      --window_size=2000 \
+      --overlap_ratio=0.1 \
       --conf_threshold=0.2
   ```
 

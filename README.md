@@ -35,10 +35,10 @@
 
   We Provide detection models trained on our data sets.
 
-  * [pas](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pas.train1.tar.gz)
-  * [pam](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pam.train1.tar.gz)
-  * [mt](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/mt.train1.tar.gz)
-  * [azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/azan.train1.tar.gz)
+  * [pas](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pas_train1.tar.gz)
+  * [pam](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/pam_train1.tar.gz)
+  * [mt](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/mt_train1.tar.gz)
+  * [azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/trained_models/azan_train1.tar.gz)
 
   You can un-tar each tar.gz file via, e.g.,:
 
@@ -81,5 +81,12 @@
     --input_config_path=${CONFIG_PATH}/input.config \
     --gpu_list=${GPU}
   ```
+
+  * ${TRAIN_DATA_PATH}には学習結果ファイルを出力するディレクトリを指定します。
+  * ${CONFIG_PATH}には以下の configuration file へのパスを指定します。それぞれ別の場所を指定して大丈夫です。
+    * glomerulus_model.config
+    * glomerulus_train.config
+    * input.config
+  * 使用する GPU を指定します。"--gpu_list=0,1" or "--gpu_list=1" のように指定します。
 
 
