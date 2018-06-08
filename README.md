@@ -77,7 +77,8 @@ Please set up by the following procedure.
 
 1. Data Preparation
 
-  学習データとアノテーションのセットを用意してください。
+  Please prepare a set of learning data and annotations showing correct answers.
+  And see the TensorFlow's [*Programmer's Guide:"Importing Data"*](https://www.tensorflow.org/programmers_guide/datasets).
 
 
 2. Configuration

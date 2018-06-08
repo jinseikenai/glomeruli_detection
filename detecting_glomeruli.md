@@ -23,20 +23,26 @@
       --conf_threshold=0.2
   ```
 
-  * Set a path of text file in which the processing target is written to ${TARGET_LIST}.
-  * ${DATA_DIR}にはWSIファイルを配置したファイルフォルダを指定します。本プログラムでは${DATA_PATH}/${STAINING}以下に${TARGET_LIST}の内容のファイルが存在することを前提にしています。
-  * Set a code of target staining from below to ${STAINING}
+  * Set ${TARGET_LIST} points to a path of text file in which the processing target is written.
+  * Set ${DATA_DIR} points to a path of the file folder in which there are whole slide images.
+  This program assumes that the processing target files indicated by the ${TARGET_LIST} exist under the ${DATA_PATH}/${STAINING}.
+  * Set ${STAINING} points to a code of target staining from below.
     * OPT_PAS
     * OPT_PAM
     * OPT_MT
     * OPT_Azan
 
-  * ${OUTPUT_DIR}には処理結果（検出した糸球体領域の位置情報のリスト）を出力するファイルフォルダを指定します。
-  * ${FILE_EXTENSON} には出力ファイルにつける拡張子を指定します。この引数は、複数の条件で抽出処理を実行した場合に、それぞれの結果ファイルを区別するために用意しています。
-  * ${MODEL_PATH}には検出に用いる学習済みモデルファイルへのパスを指定します。そのパス以下に、検出に利用する Tensorflow の frozon_inference_graph.pb を置いてください。
-  * --window_size には sliding window 方式で糸球体検出領域（"window"）をスライドさせる際の"window"のサイズを指定します。サイズの単位はマイクロメートルです。
-  * --overlap_ratio には sliding window 方式で糸球体検出領域をスライドさせる際の重複させる窓の領域を指定します。1.0未満の正の数値を指定してください。
-  * --conf_threshold には検出結果に採用する最低限の confidence threshold の値を指定します。この値以下の confidence の糸球体領域候補は検出結果に含まれなくなります。1.0以下の正の数値を指定してください。
+  * Set ${OUTPUT_DIR} points to a path of the file folder in which this process write a output file to .
+  * Set ${FILE_EXTENSON} for distinguishing execution results. It is added to the result file name.
+  * Set ${MODEL_PATH} points to a path of the model file used for detection. You should put a tensorflow's frozen_inference_graph.pb under this path.
+  * Set --window_size points to the size(width and height) of sliding window for detection.
+  The unit of size(width and height) is micrometer.
+  Please set a positive number like 2000.
+  * Set --overlap_ratio point to overlapping ration of the sliding window.
+  Please set a positive number less than equal 1.0. Namely (0.0, 1.0]
+  * Set --conf_threshold points to the minimum confidence value to adopt for candidates.
+  Candidates with confidence value lower the threshold will not be included in the detection result.
+  Please set a positive number less than equal 1.0. Namely (0.0, 1.0]
 
 ## <a name='merge'>2. Merging Overlapping Regions</a>
 
@@ -51,18 +57,22 @@
       --overlap_threshold=0.35
   ```
 
-  * ${DETECTION_RESULT_FILE}には 1. の検出結果ファイルへのパスを指定します。
-  * ${DATA_DIR}にはWSIファイルを配置したファイルフォルダを指定します。
+  * Set ${DETECTION_RESULT_FILE} points to a path of the detection result file.
+  * Set ${DATA_DIR} points to a path of the file folder in which there are whole slide images.
   * Set a code of target staining from below to ${STAINING}
     * OPT_PAS
     * OPT_PAM
     * OPT_MT
     * OPT_Azan
 
-  * ${OUTPUT_DIR}には、マージ結果ファイルを出力するフォルダへのパスを指定します。
-  * ${FILE_EXTENTION} にはマージ結果ファイルに付与する名前を指定します。この引数は、複数の条件で抽出処理を実行した場合に、それぞれの結果ファイルを区別するために用意しています。
-  * --conf_threshold には、マージ結果に採用する最低限の confidence threshold の値を指定します。この値以下の confidence の糸球体領域候補は検出結果に含まれなくなります。1.0以下の正の数値を指定してください。
-  * --overlap_threshold にはオーバーラップしていると判定する重複率の最小値を指定してください。この比率以上に重複している糸球体領域候補はマージされます。(0, 1] の値を指定してください。
+  * Set ${OUTPUT_DIR} points to a path of the file folder in which this process write a output file to .
+  * Set ${FILE_EXTENSON} for distinguishing execution results. It is added to the result file name.
+  * Set --conf_threshold points to the minimum confidence value to adopt for merge result.
+  Candidates with confidence value lower the threshold will not be included in the merged result.
+  Please set a positive number less than equal 1.0. Namely (0.0, 1.0]
+  * Set --overlap_threshold points to the minimum duplicate ration that judges overlapped.
+  Glomerular region candidates have more overlapped area over this ratio are merged.
+  Please set a positive number less than equal 1.0. Namely (0.0, 1.0]
 
 
 ## <a name='visualize'>3. Evaluation and Visualization</a>
@@ -72,10 +82,26 @@
       --staining=${STAINING} \
       --data_dir=${ANNOTATION_FILE_ROOT_DIR} \
       --target_list=${DETECTION_RESULT_FILE} \
-      --merged_list=${MERGING_RESULT_FILE} \
+      --merged_list=${MERGED_RESULT_FILE} \
       --output_dir=${OUTPUT_DIR} \
       --iou_threshold=0.5 \
       --no_save
   ```
 
+  * Set a code of target staining from below to ${STAINING}
+    * OPT_PAS
+    * OPT_PAM
+    * OPT_MT
+    * OPT_Azan
+  * Set ${DATA_DIR} points to a path of the file folder in which there are whole slide images.
+  * Set ${TARGET_LIST} points to a path of text file in which the processing target is written.
+  * Set ${MERGED_RESULT_LIST} points to a path of the merged result file.
+  * If --no_save flag is set, the result image file is not saved.
+  You should not set this flag if you want to save the result image file.
+
+  An example of the processing result of PAS stained slide.
+
   ![sample result](https://github.com/jinseikenai/glomeruli_detection/blob/master/OPT_PAS_TEST01_001_pw40_ds8.PNG "SampleResult")
+
+  * <span style="color: red;">□: **Red Frames**</span> are the processing result.
+  * <span style="color: yellow;">□: **Yellow Frames**</span> are the correct answer specified by experts.
