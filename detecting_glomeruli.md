@@ -26,7 +26,7 @@
   * Set ${TARGET_LIST} points to a path of text file in which the processing target is written.
   * Set ${DATA_DIR} points to a path of the file folder in which there are whole slide images.
   This program assumes that the processing target files indicated by the ${TARGET_LIST} exist under the ${DATA_PATH}/${STAINING}.
-  * Set ${STAINING} points to a code of target staining from below.
+  * Set ${STAINING} points to a code of staining method from below.
     * OPT_PAS
     * OPT_PAM
     * OPT_MT
@@ -59,7 +59,7 @@
 
   * Set ${DETECTION_RESULT_FILE} points to a path of the detection result file.
   * Set ${DATA_DIR} points to a path of the file folder in which there are whole slide images.
-  * Set a code of target staining from below to ${STAINING}
+  * Set ${STAINING} points to a code of staining method from below.
     * OPT_PAS
     * OPT_PAM
     * OPT_MT
@@ -88,7 +88,7 @@
       --no_save
   ```
 
-  * Set a code of target staining from below to ${STAINING}
+  * Set ${STAINING} points to a code of staining method from below.
     * OPT_PAS
     * OPT_PAM
     * OPT_MT
