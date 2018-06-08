@@ -75,13 +75,17 @@ Please set up by the following procedure.
 
   For reference information on how to do learning, Please refer to the following notes, and my_train.py and my_trainer.py.
 
+1. Data Preparation
 
-1. Configuration
+  学習データとアノテーションのセットを用意してください。
+
+
+2. Configuration
 
   Please configure a variable *"PATH_TO_BE_CONFIGURED*" in *"config/glomerulus_train.config"* and *"config/input.config*" appropriately to your environment.
 
 
-2. Execution
+3. Execution
 
   You could execute learning with the following command.
 

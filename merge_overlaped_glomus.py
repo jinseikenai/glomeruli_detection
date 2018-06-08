@@ -99,7 +99,7 @@ class MargeOverlapedGlomus(object):
                         '''確信度がしきい値以上の場合のみ領域として採用する'''
                         if float(row[9]) >= self.CONF_THRESH:
                             area = (float(row[7]) - float(row[5])) * (float(row[8]) - float(row[6]))
-                            new_rect = map(float, row[5:10])
+                            new_rect = list(map(float, row[5:10]))
                             new_rect.append(area)
                             '''overlap を書き込めるようにしておく'''
                             new_rect.append(0.0)
@@ -118,7 +118,7 @@ class MargeOverlapedGlomus(object):
                                           str(int(rect[2])) + ',' + str(int(rect[3])) + ',' +
                                           str(rect[4]) + '\n')
                         merged_file.flush()
-                    print('{}:{}').format(prev_file_name, self.rect_list)
+                    print('{}:{}'.format(prev_file_name, self.rect_list))
 
                     '''時間記録'''
                     duration = time.time() - start_time
@@ -348,16 +348,16 @@ def parse_args():
     parser = argparse.ArgumentParser(description='MERGE_OVERLAPPED_GLOMUS')
     parser.add_argument('--staining', dest='staining', help="Please set --staining for 染色方法 like OPT_PAS", type=str,
                         default='OPT_PAS')
-    parser.add_argument('--input_file', dest='input_file', help="Please set --input_file", type=str,
+    parser.add_argument('--detected_list', dest='input_file', help="Please set --input_file", type=str,
                         default='/home/simamoto/work/tmp/ClippedGlomus/PAS')
     parser.add_argument('--output_dir', dest='output_dir', help="Please set --output_dir", type=str,
                         default='/home/simamoto/work/tmp/ClippedGlomus/PAS')
-    parser.add_argument('--training_type', dest='training_type', help="Please set --training_type", type=str,
+    parser.add_argument('--output_file_ext', dest='training_type', help="Please set --training_type", type=str,
                         default='')
     parser.add_argument('--conf_threshold', dest='conf_threshold', help="Please set --conf_threshold", type=float,
                         default=0.6)
-    parser.add_argument('--annotation_dir', dest='annotation_dir', help="Please set --annotation_dir", type=str)
-    parser.add_argument('--overlap_threshold', dest='overlap_threshold', help="Please set --overlap_threshold", type=str)
+    parser.add_argument('--data_dir', dest='annotation_dir', help="Please set --data_dir", type=str)
+    parser.add_argument('--overlap_threshold', dest='overlap_threshold', help="Please set --overlap_threshold", type=float)
 
     return parser.parse_args()
 

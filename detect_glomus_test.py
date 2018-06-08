@@ -239,8 +239,8 @@ def parse_args():
     parser.add_argument('--network', dest='network', help="set network", type=str, default="VGGnet_test")
     parser.add_argument('--model', dest='model', help="set learned model", type=str)
     parser.add_argument('--target_list', dest='target_list', help="set target_list", type=str)
-    parser.add_argument('--target_dir', dest='target_dir', help="set target_dir", type=str)
-    parser.add_argument('--data_category', dest='data_category', help="Data Category(Staining Method)", type=str,
+    parser.add_argument('--data_dir', dest='target_dir', help="set data_dir", type=str)
+    parser.add_argument('--staining', dest='data_category', help="Data Category(Staining Method)", type=str,
                         default='OPT_PAM')
     parser.add_argument('--output_dir', dest='output_dir', help="Please set --output_dir", type=str,
                         default='./output')

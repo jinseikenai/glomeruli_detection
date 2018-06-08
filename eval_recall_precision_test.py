@@ -78,7 +78,7 @@ class EvalRecallPrecision(AnnotationHandler):
                                 slide_name_body_list = self.re_annotation_file_date_pattern.findall(slide_name_body)
                                 if len(slide_name_body_list) == 1:
                                     slide_name_body = slide_name_body_list[0]
-                                if self.detected_glomus_list.has_key(slide_name_body):
+                                if slide_name_body in self.detected_glomus_list:
                                     del self.gt_list[:]
                                     '''アノテーションファイルに対応する画像ファイルを読み込む'''
                                     self.read_image(dir_path, body)
@@ -139,7 +139,7 @@ class EvalRecallPrecision(AnnotationHandler):
                     draw.rectangle([gt[0], gt[1], gt[2], gt[3]], fill=None, outline='yellow')
                 # '''領域のラベルも書くようにする'''
                 # draw.text((gt[0], gt[1] - text_size), 'gt', fill='yellow')
-                gt = map(lambda x: x * times, gt)
+                gt = list(map(lambda x: x * times, gt))
                 iou_list = []
                 for found_rect in self.detected_glomus_list[file_key]:
                     iou = self.check_overlap(gt, found_rect)
@@ -156,7 +156,7 @@ class EvalRecallPrecision(AnnotationHandler):
             '''precisionチェック'''
             # print(len(self.detected_glomus_list[file_key]))
             for found_rect in self.detected_glomus_list[file_key]:
-                rect = map(lambda x: x / times, found_rect)
+                rect = list(map(lambda x: x / times, found_rect))
                 draw.rectangle([rect[0], rect[1], rect[2], rect[3]], fill=None, outline='red')
                 '''領域のラベルも書くようにする'''
                 max_iou = 0.0
@@ -209,10 +209,10 @@ class EvalRecallPrecision(AnnotationHandler):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='annotation reader')
-    parser.add_argument('--staining_type', dest='staining_type', help="set --staining_type like OPT_PAS", type=str, required=True)
-    parser.add_argument('--annotation_dir', dest='annotation_dir', help="set --annotation_dir", type=str, required=True)
+    parser.add_argument('--staining', dest='staining_type', help="set --staining_type like OPT_PAS", type=str, required=True)
+    parser.add_argument('--data_dir', dest='annotation_dir', help="set --annotation_dir", type=str, required=True)
     parser.add_argument('--target_list', dest='target_list', help="set --target_list", type=str, required=True)
-    parser.add_argument('--detect_list', dest='detect_list', help="set --detect_list", type=str, required=True)
+    parser.add_argument('--merged_list', dest='detect_list', help="set --detect_list", type=str, required=True)
     parser.add_argument('--iou_threshold', dest='iou_threshold', help="set --iou_threshold", type=float, default=0.5)
     parser.add_argument('--output_dir', dest='output_dir', help="set --output_dir", type=str, default='.')
     parser.add_argument('--no_save', dest='no_save', help="set --no_save for test", action='store_true')
