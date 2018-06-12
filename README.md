@@ -75,7 +75,7 @@ Please set up by the following procedure.
 * Glomeruli Learning Programs
   * learning: my_train.py, my_trainer.py
 
-## Transfer Learning or Additional Learning
+## <a name='learning'>Transfer Learning or Additional Learning</a>
 
   Based on our learning model, you could do your transfer learning or additional learning.
 
@@ -92,7 +92,7 @@ Please set up by the following procedure.
   Please configure a variable *"PATH_TO_BE_CONFIGURED*" in *"config/glomerulus_train.config"* and *"config/input.config*" appropriately to your environment.
 
 
-3. Execution
+3. Learning Execution
 
   You could execute learning with the following command.
 
