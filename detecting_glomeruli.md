@@ -1,12 +1,12 @@
 # Quick Start: Detecting Glomeruli
   Using pre-trained models and trial data provided [here](https://github.com/jinseikenai/glomeruli_detection#pre-trained_models), you could confirm the [Faster R-CNN-Based Glomerular Detector](https://github.com/jinseikenai/glomeruli_detection) and its results.
 
-  An example of the result of glomeruli detection for PAS stained slide is shown below.
+  An example of the result of glomeruli detection for a PAS stained slide is shown below.
 
   ![sample result](https://github.com/jinseikenai/glomeruli_detection/blob/master/OPT_PAS_TEST01_001_pw40_ds8.PNG "SampleResult")
 
   * <span style="color: red;">□ **Red Frames**</span> are the processing result.
-  * <span style="color: yellow;">□ **Yellow Frames**</span> are the Ground Truth (correct answer) specified by experts.
+  * <span style="color: yellow;">□ **Yellow Frames**</span> are the Ground Truth(GT) (i.e. correct answer) specified by experts.
   
   The detection procedure is as follows.
 
