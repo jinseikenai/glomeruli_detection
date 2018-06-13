@@ -68,8 +68,8 @@ Please set up by the following procedure.
 
   <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />These data are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
-  Using these data, you could confirm the glomeruli detection programs and its result.
-  Please see [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for how to do it.
+  Using these data, you could confirm the *Faster R-CNN-Based Glomerular Detector* and its result.
+  Please see [Quick Start Guide](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for how to do it.
 
 ## Program List
 * Glomeruli Detection Programs

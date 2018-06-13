@@ -5,7 +5,7 @@
 
   ![sample result](https://github.com/jinseikenai/glomeruli_detection/blob/master/OPT_PAS_TEST01_001_pw40_ds8.PNG "SampleResult")
 
-  * <span style="color: red;">□ **Red Frames**</span> are the processing result.
+  * <span style="color: red;">□ **Red Frames**</span> are the detection results of the Faster R-CNN-Based Glomerular Detector.
   * <span style="color: yellow;">□ **Yellow Frames**</span> are the Ground Truth(GT) (i.e. correct answer) specified by experts.
   
   The detection procedure is as follows.
