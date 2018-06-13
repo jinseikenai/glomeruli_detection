@@ -43,7 +43,7 @@ Please set up by the following procedure.
 
 ## <a name=pre-trained_models>Pre-trained models</a>
 
-  We provide our detection models pre-trained on our WSI datasets.
+  We provide our pre-trained models trained on our WSI datasets.
   
   <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />Our pre-trained models are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
   
