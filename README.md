@@ -66,7 +66,7 @@ Please set up by the following procedure.
   Whole Slide Images for your trial can be download from [here](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz).
   These data are not included in the training data of our pre-trained models.
 
-  <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />these data are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+  <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />These data are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
   Using these data, you could confirm the glomeruli detection programs and its result.
   Please see [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for how to do it.
@@ -78,11 +78,11 @@ Please set up by the following procedure.
   3. evaluation and visualization: eval_recall_precision_test.py
 
 * Glomeruli Learning Programs
-  * learning: my_train.py, my_trainer.py
+  1. learning: my_train.py, my_trainer.py
 
 ## <a name='learning'>Transfer Learning or Additional Learning</a>
 
-  Based on our trained model, you could do your transfer learning or additional learning.
+  Based on our pre-trained model, you could do your transfer learning or additional learning.
 
   For reference information on how to do learning, Please refer to the following notes, and my_train.py and my_trainer.py.
 
