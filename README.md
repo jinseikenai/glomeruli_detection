@@ -37,17 +37,17 @@ Please set up by the following procedure.
     * tensorflow 1.4.1
 
 
-## Quick Start:
+## Quick Start
 
-  * [Quick Start Guide](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for getting Started to detection of glomeruli with our pre-traind models and sample WSIs.
+  * [Quick Start Guide](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for getting Started to detection of glomeruli with our [pre-traind models](#pre-trained_models) and [sample WSIs](#sample_wsi).
 
-## <a name=trained_models>Pre-trained models</a>
+## <a name=pre-trained_models>Pre-trained models</a>
 
-  We provide our pre-trained models trained on our data sets.
+  We provide our detection models pre-trained on our WSI datasets.
   
   <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />Our pre-trained models are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
   
-  They are pre-trained for each staining type.
+  Each of them is pre-trained for each staining type.
   Please choose a pre-trained model in accord with your use purpose among the following inside.
   
   * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz) : periodic acid-Schiff
@@ -61,7 +61,7 @@ Please set up by the following procedure.
   tar -xvfz pas.train1.tar.gz
   ```
 
-## test data
+## <a name=sample_wsi>sample WSIs</a>
 
   Whole Slide Images for testing can be download from [here](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz).
   These data are not included in the training data.
@@ -89,7 +89,7 @@ Please set up by the following procedure.
 1. Data Preparation
 
   Please prepare a set of learning data and annotations showing correct answers.
-  And see the TensorFlow's [*Programmer's Guide:"Importing Data"*](https://www.tensorflow.org/programmers_guide/datasets).
+  And see the TensorFlow's ["Preparing Inputs"](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/using_your_own_dataset.md) manual and [*Programmer's Guide:"Importing Data"*](https://www.tensorflow.org/programmers_guide/datasets).
 
 
 2. Configuration

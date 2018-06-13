@@ -1,5 +1,5 @@
 # Quick Start: Detecting Glomeruli
-  Using models and data provided [here](https://github.com/jinseikenai/glomeruli_detection#trained_models), you could confirm the glomeruli detection programs and its result.
+  Using models and data provided [here](https://github.com/jinseikenai/glomeruli_detection#pre-trained_models), you could confirm the glomeruli detection programs and its result.
 
   The detection procedure is as follows.
 
@@ -104,4 +104,4 @@
   ![sample result](https://github.com/jinseikenai/glomeruli_detection/blob/master/OPT_PAS_TEST01_001_pw40_ds8.PNG "SampleResult")
 
   * <span style="color: red;">□: **Red Frames**</span> are the processing result.
-  * <span style="color: yellow;">□: **Yellow Frames**</span> are the correct answer specified by experts.
+  * <span style="color: yellow;">□: **Yellow Frames**</span> are the Ground Truth (correct answer) specified by experts.
