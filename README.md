@@ -55,6 +55,7 @@ Please set up by the following procedure.
   * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz) :  for MT(Masson trichrome) stain slides.
   * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz) : for Azan stain slides.
 
+  The downloaded files are compressed.
   You can un-tar each tar.gz file via, e.g.,:
 
   ```
@@ -115,7 +116,7 @@ Please set up by the following procedure.
 
 ## List of programs
 
-  The list of programs included in this repository is listed below by function.  
+  Here is the list of programs included in this repository listed by its function.  
 
 * Glomeruli Detection Programs
   1. detection : detect_glomus_test.py
