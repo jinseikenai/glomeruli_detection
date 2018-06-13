@@ -62,7 +62,7 @@ Please set up by the following procedure.
   tar -xvfz pas.train1.tar.gz
   ```
 
-  Even if there is no match exactly, if you find similar one in characteristics, please try it.
+  Even if there is no match exactly, if you find similar one in its characteristics, please try it.
   Or, you could try [Transfer Learning](#learning) on your data to detect glomeruli more correctly.
 
 ## <a name=sample_wsi>sample WSIs</a>
