@@ -39,7 +39,7 @@ Please set up by the following procedure.
 
 ## Quick Start:
 
-  * ["Quick Start Guide"](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) is an explanation for getting Started with our pre-traind models and sample WSIs.
+  * [Quick Start Guide](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for getting Started to detection of glomeruli with our pre-traind models and sample WSIs.
 
 ## <a name=trained_models>Pre-trained models</a>
 
