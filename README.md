@@ -50,9 +50,9 @@ Please set up by the following procedure.
   Each of them is pre-trained for each staining type.
   Please choose a pre-trained model in accord with your purpose of use among the following inside.
   
-  * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz) : for periodic acid-Schiff stain slides.
-  * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz) : for periodic acid-methenamine silver stain slides. 
-  * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz) :  for Masson trichrome stain slides.
+  * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz) : for PAS(periodic acid-Schiff) stain slides.
+  * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz) : for PAM(periodic acid-methenamine silver) stain slides. 
+  * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz) :  for MT(Masson trichrome) stain slides.
   * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz) : for Azan stain slides.
 
   You can un-tar each tar.gz file via, e.g.,:
@@ -60,6 +60,9 @@ Please set up by the following procedure.
   ```
   tar -xvfz pas.train1.tar.gz
   ```
+
+  Even if there is no match exactly, if you find similar one in characteristics, please try it.
+  Or, you could try [Transfer Learning](#learning) on your data.
 
 ## <a name=sample_wsi>sample WSIs</a>
 
@@ -71,16 +74,7 @@ Please set up by the following procedure.
   Using these data, you could confirm the *Faster R-CNN-Based Glomerular Detector* and its result.
   Please see [Quick Start Guide](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for how to do it.
 
-## Program List
-* Glomeruli Detection Programs
-  1. detection : detect_glomus_test.py
-  2. merging overlapping regions : merge_overlaped_glomus.py
-  3. evaluation and visualization: eval_recall_precision_test.py
-
-* Glomeruli Learning Programs
-  1. learning: my_train.py, my_trainer.py
-
-## <a name='learning'>Transfer Learning or Additional Learning</a>
+## <a name='learning'>Transfer Learning / Additional Learning</a>
 
   Based on our pre-trained model, you could do your transfer learning or additional learning.
 
@@ -118,3 +112,17 @@ Please set up by the following procedure.
     * glomerulus_train.config
     * input.config
   * Set the GPU list you can use to ${GPU} like "--gpu_list=0,1" or "--gpu_list=1".
+
+## List of programs
+
+  The list of programs included in this repository is listed below by function.  
+
+* Glomeruli Detection Programs
+  1. detection : detect_glomus_test.py
+  2. merging overlapping regions : merge_overlaped_glomus.py
+  3. evaluation and visualization : eval_recall_precision_test.py
+  * common function : annotation_handler.py, glomus_handler.py
+
+* Transfer Learning / Additional Learning Programs
+  1. learning: my_train.py call my_trainer.py
+
