@@ -39,18 +39,20 @@ Please set up by the following procedure.
 
 ## Quick Start:
 
-  * [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)
-
-    We will explain the procedure to detect glomeruli using the provided learned models and sample WSIs.
+  * ["Quick Start Guide"](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) is an explanation for getting Started with our pre-traind models and sample WSIs.
 
 ## <a name=trained_models>trained models</a>
 
-  We Provide detection models trained on our data sets.
-
-  * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz)
-  * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz)
-  * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz)
-  * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz)
+  We provide our pre-trained models trained on our data sets.
+  
+  <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />There Pre-Trained models are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+  
+  They are pre-trained for each staining type.
+  
+  * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz) : periodic acid-Schiff
+  * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz) : periodic acid-methenamine silver 
+  * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz) : Masson trichrome
+  * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz) : 
 
   You can un-tar each tar.gz file via, e.g.,:
 
@@ -77,7 +79,7 @@ Please set up by the following procedure.
 
 ## <a name='learning'>Transfer Learning or Additional Learning</a>
 
-  Based on our learning model, you could do your transfer learning or additional learning.
+  Based on our trained model, you could do your transfer learning or additional learning.
 
   For reference information on how to do learning, Please refer to the following notes, and my_train.py and my_trainer.py.
 
