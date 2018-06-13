@@ -62,11 +62,11 @@ Please set up by the following procedure.
   ```
 
   Even if there is no match exactly, if you find similar one in characteristics, please try it.
-  Or, you could try [Transfer Learning](#learning) on your data.
+  Or, you could try [Transfer Learning](#learning) on your data to detect glomeruli more correctly.
 
 ## <a name=sample_wsi>sample WSIs</a>
 
-  Whole Slide Images for your trial can be download from [here](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz).
+  The Whole Slide Images (WSIs) for your trial can be download from [here](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz).
   These data are not included in the training data of our pre-trained models.
 
   <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />These data are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
