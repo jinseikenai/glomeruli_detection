@@ -31,54 +31,54 @@ Please set up by the following procedure.
     * tensorflow 1.4.1
 
 
-## Quick Start:
+## Quick Start
 
-  * [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md)
+  * [Quick Start Guide](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for getting Started to detection of glomeruli with our [pre-traind models](#pre-trained_models) and [sample WSIs](#sample_wsi).
 
-    We will explain the procedure to detect glomeruli using the provided learned models and sample WSIs.
+## <a name=pre-trained_models>Pre-trained models</a>
 
-## <a name=trained_models>trained models</a>
+  We provide our pre-trained models trained on our WSI datasets.
+  
+  <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />Our pre-trained models are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+  
+  Each of them is pre-trained for each staining type.
+  Please choose a pre-trained model in accord with your purpose of use among the following inside.
+  
+  * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz) : for PAS(periodic acid-Schiff) stain slides.
+  * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz) : for PAM(periodic acid-methenamine silver) stain slides. 
+  * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz) :  for MT(Masson trichrome) stain slides.
+  * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz) : for Azan stain slides.
 
-  We Provide detection models trained on our data sets.
-
-  * [PAS](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pas_train1.tar.gz)
-  * [PAM](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/pam_train1.tar.gz)
-  * [MT](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/mt_train1.tar.gz)
-  * [Azan](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/trained_models/azan_train1.tar.gz)
-
+  The downloaded files are compressed.
   You can un-tar each tar.gz file via, e.g.,:
 
   ```
   tar -xvfz pas.train1.tar.gz
   ```
 
-## test data
+  Even if there is no match exactly, if you find similar one in its characteristics, please try it.
+  Or, you could try [Transfer Learning](#learning) on your data to detect glomeruli more correctly.
 
-  Whole Slide Images for testing can be download from [here](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz).
-  These data are not included in the training data.
+## <a name=sample_wsi>sample WSIs</a>
 
-  Using these data, you could confirm the glomeruli detection programs and its result.
-  Please see [Quick Start](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for how to do it.
+  The Whole Slide Images (WSIs) for your trial can be download from [here](http://www.m.u-tokyo.ac.jp/medinfo/download/jinai/faster_rcnn/test_data.tar.gz).
+  These data are not included in the training data of our pre-trained models.
 
-## Program List
-* Glomeruli Detection Programs
-  1. detection : detect_glomus_test.py
-  2. merging overlapping regions : merge_overlaped_glomus.py
-  3. evaluation and visualization: eval_recall_precision_test.py
+  <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />These data are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
-* Glomeruli Learning Programs
-  * learning: my_train.py, my_trainer.py
+  Using these data, you could confirm the *Faster R-CNN-Based Glomerular Detector* and its result.
+  Please see [Quick Start Guide](https://github.com/jinseikenai/glomeruli_detection/blob/master/detecting_glomeruli.md) for how to do it.
 
-## Transfer Learning or Additional Learning
+## <a name='learning'>Transfer Learning / Additional Learning</a>
 
-  Based on our learning model, you could do your transfer learning or additional learning.
+  Based on our pre-trained model, you could do your transfer learning or additional learning.
 
   For reference information on how to do learning, Please refer to the following notes, and my_train.py and my_trainer.py.
 
 1. Data Preparation
 
   Please prepare a set of learning data and annotations showing correct answers.
-  And see the TensorFlow's [*Programmer's Guide:"Importing Data"*](https://www.tensorflow.org/programmers_guide/datasets).
+  And see the TensorFlow's ["Preparing Inputs"](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/using_your_own_dataset.md) manual and [*Programmer's Guide:"Importing Data"*](https://www.tensorflow.org/programmers_guide/datasets).
 
 
 2. Configuration
@@ -86,7 +86,7 @@ Please set up by the following procedure.
   Please configure a variable *"PATH_TO_BE_CONFIGURED*" in *"config/glomerulus_train.config"* and *"config/input.config*" appropriately to your environment.
 
 
-3. Execution
+3. Learning Execution
 
   You could execute learning with the following command.
 
@@ -107,3 +107,17 @@ Please set up by the following procedure.
     * glomerulus_train.config
     * input.config
   * Set the GPU list you can use to ${GPU} like "--gpu_list=0,1" or "--gpu_list=1".
+
+## List of programs
+
+  Here is the list of programs included in this repository listed by its function.  
+
+* Glomeruli Detection Programs
+  1. detection : detect_glomus_test.py
+  2. merging overlapping regions : merge_overlaped_glomus.py
+  3. evaluation and visualization : eval_recall_precision_test.py
+  * common function : annotation_handler.py, glomus_handler.py
+
+* Transfer Learning / Additional Learning Programs
+  1. learning: my_train.py call my_trainer.py
+

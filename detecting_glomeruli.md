@@ -1,6 +1,13 @@
 # Quick Start: Detecting Glomeruli
-  Using models and data provided [here](https://github.com/jinseikenai/glomeruli_detection#trained_models), you could confirm the glomeruli detection programs and its result.
+  Using pre-trained models and trial data provided [here](https://github.com/jinseikenai/glomeruli_detection#pre-trained_models), you could confirm the [Faster R-CNN-Based Glomerular Detector](https://github.com/jinseikenai/glomeruli_detection) and its results.
 
+  It is shown below that is an example of the result of glomeruli detection for a PAS stain slide.
+
+  ![sample result](https://github.com/jinseikenai/glomeruli_detection/blob/master/OPT_PAS_TEST01_001_pw40_ds8.PNG "SampleResult")
+
+  * <span style="color: red;">□ **Red Frames**</span> are the detection results of the Faster R-CNN-Based Glomerular Detector.
+  * <span style="color: yellow;">□ **Yellow Frames**</span> are the Ground Truth(GT) (i.e. correct answer) specified by experts.
+  
   The detection procedure is as follows.
 
   1. [Glomeruli Detection](#detection)
@@ -100,10 +107,6 @@
   * Set ${MERGED_RESULT_LIST} points to a path of the merged result file.
   * If --no_save flag is set, the result image file is not saved.
   You should not set this flag if you want to save the result image file.
-
-  An example of the processing result of PAS stained slide.
-
-  ![sample result](https://github.com/jinseikenai/glomeruli_detection/blob/master/OPT_PAS_TEST01_001_pw40_ds8.PNG "SampleResult")
-
-  * <span style="color: red;">□: **Red Frames**</span> are the processing result.
-  * <span style="color: yellow;">□: **Yellow Frames**</span> are the correct answer specified by experts.
+  
+  In this evaluation, the correct answer judgment threshold is set to "Intersection over Union(IoU) >= 0.5" of the ground truth(GT) and the detected boundary box
+  according to the configuration of the [PASCAL VOC challenge](http://host.robots.ox.ac.uk/pascal/VOC/pubs/everingham10.pdf).
