@@ -1,4 +1,13 @@
-# coding=utf-8
+# Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
+# This software includes the work that is distributed in the Apache Licence 2.0.
+r"""
+This program is unit of compiling the result of Faster R-CNN-Based Glomerular Detector.
+This unit detect glomeruli from multistained Whole Slide Images(WSIs) of human renal tissue sections.
+This detector is the first step of the detection procedure as follows.
+  1. Glomeruli Detection
+  2. Merging Overlapping Regions
+  3. Evaluation and Visualization
+"""
 from annotation_handler import AnnotationHandler
 import argparse
 import os

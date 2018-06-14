@@ -1,13 +1,18 @@
-# coding=utf-8
+# Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
+# This software includes the work that is distributed in the Apache Licence 2.0.
+
+r"""
+A super class of handling virtual slide files.
+This Unit manage the symbol about representing staining method.
+"""
+
 import re
+
 
 class GlomusHanderException(Exception):
     pass
 
-'''
-バーチャルスライドファイルを取り扱うクラスの上位クラス。
-各種の染色方式ごとのファイル名のパターンを一元管理する。
-'''
+
 class GlomusHandler(object):
     '''データカテゴリに応じて対象ファイル識別パターンを設定する'''
     def set_type(self, data_category):

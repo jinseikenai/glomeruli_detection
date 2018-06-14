@@ -1,3 +1,6 @@
+# This program is a minor modification of models/research/object_detection/trainer.py program.
+# The copyright of the original program is as follows.
+#
 # Copyright 2017 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

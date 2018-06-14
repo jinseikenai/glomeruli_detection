@@ -1,4 +1,5 @@
-# coding=utf-8
+# Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
+# This software includes the work that is distributed in the Apache Licence 2.0.
 import os
 import xml.etree.ElementTree as ElementTree
 import re

@@ -1,19 +1,26 @@
-# coding=utf-8
+# Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
+# This software includes the work that is distributed in the Apache Licence 2.0.
+r"""
+This program is the main unit of Faster R-CNN-Based Glomerular Detector.
+This unit detect the reagions of glomeruli from multistained Whole Slide Images(WSIs) of human renal tissue sections.
+This detector is the first step of the detection procedure as follows.
+  1. Glomeruli Detection
+  2. Merging Overlapping Regions
+  3. Evaluation and Visualization
+"""
 import argparse
 import os
-import openslide
 import math
 import tensorflow as tf
 import numpy as np
 import datetime
 import time
 from glomus_handler import GlomusHandler, get_staining_type
+from PIL import Image
 
-from matplotlib import pyplot as plt
-from PIL import Image, ImageDraw
 
-"""バーチャルスライドから糸球体を検出する処理を担うクラス"""
 class GlomusDetector(GlomusHandler):
+    """バーチャルスライドから糸球体を検出する処理を担うクラス"""
     def __init__(self, data_category, args):
         """糸球体検出処理クラスの初期化"""
         self.data_category = data_category
@@ -53,6 +60,14 @@ class GlomusDetector(GlomusHandler):
 
         self.log_file = os.path.join(self.output_root_dir, self.TYPE + args.output_file_ext + '_log.csv')
 
+        '''information of each slide'''
+        self.org_slide_width = 0
+        self.org_slide_height = 0
+        self.org_slide_objective_power = 0.0
+        self.slide_downsample = 0.0
+        self.mpp_x = 0.0
+        self.mpp_y = 0.0
+
     def split_all(self, sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections):
         splited_target_dir = args.target_dir.split('/')
         site_name = splited_target_dir[-2]
@@ -64,7 +79,24 @@ class GlomusDetector(GlomusHandler):
                         log_file.write('file,time\n')
                         lines = list_file.readlines()
                         for line in lines:
-                            line_parts = line.strip().split('/')
+                            line_parts = line.strip().split(',')
+                            if len(line_parts) < 7:
+                                # raise AttributeError('The format of the target_list is inappropriate.')
+                                self.org_slide_width = 0
+                                self.org_slide_height = 0
+                                self.org_slide_objective_power = 0.0
+                                self.slide_downsample = 0.0
+                                self.mpp_x = 0.0
+                                self.mpp_y = 0.0
+                            else:
+                                self.org_slide_width = int(line_parts[1])
+                                self.org_slide_height = int(line_parts[2])
+                                self.org_slide_objective_power = float(line_parts[3])
+                                self.slide_downsample = float(line_parts[4])
+                                self.mpp_x = float(line_parts[5])
+                                self.mpp_y = float(line_parts[6])
+
+                            line_parts = line_parts[0].split('/')
                             # data_date = line_parts[0] # data_date は利用しないように変更
                             patient_id = line_parts[0]
                             if patient_id.startswith('#'):
@@ -78,11 +110,8 @@ class GlomusDetector(GlomusHandler):
                                 if os.path.isdir(target_file_path):
                                     for candidate in os.listdir(target_file_path):
                                         candidate_body, ext = os.path.splitext(candidate)
-                                        candidate_body = candidate_body.replace(' ', '') # .decode('utf-8')
-                                        if file_name.find(candidate_body) >= 0 and ext == '.ndpi':
-                                            print(file_name)
+                                        if file_name.find(candidate_body) >= 0 and ext == '.PNG':
                                             start_time = time.time()
-                                            '''出力ファイル名の基本部分を作る（後ろにx, y の通し番号をつけることになる）'''
                                             self.split(sess, site_name, self.staining_dir, patient_id, candidate, output_file,
                                                        image_tensor, detection_boxes, detection_scores, detection_classes,
                                                        num_detections)
@@ -91,94 +120,94 @@ class GlomusDetector(GlomusHandler):
                                             log_file.flush()
                                             break
 
+                                    #     candidate_body = candidate_body.replace(' ', '') # .decode('utf-8')
+                                    #     if file_name.find(candidate_body) >= 0 and ext == '.ndpi':
+                                    #         print(file_name)
+                                    #         start_time = time.time()
+                                    #         '''出力ファイル名の基本部分を作る（後ろにx, y の通し番号をつけることになる）'''
+                                    #         self.split(sess, site_name, self.staining_dir, patient_id, candidate, output_file,
+                                    #                    image_tensor, detection_boxes, detection_scores, detection_classes,
+                                    #                    num_detections)
+                                    #         duration = time.time() - start_time
+                                    #         log_file.write('"{}",{}\n'.format(file_name, duration))
+                                    #         log_file.flush()
+                                    #         break
+
     def split(self, sess, site_name, staining_dir, patient_id, file_name, output_file,
               image_tensor, detection_boxes, detection_scores, detection_classes, num_detections):
+        with Image.open(os.path.join(self.args.target_dir, staining_dir, patient_id, file_name)) as img:
+            self.scan_region_from_image(sess, img, site_name, patient_id, file_name, output_file,
+                             image_tensor, detection_boxes, detection_scores, detection_classes, num_detections)
+
+        '''
         with openslide.open_slide(os.path.join(self.args.target_dir, staining_dir, patient_id, file_name)) as slide:
             ## print(slide.properties)
             # print('LEVEL:{}'.format(slide.level_count))
-            print('LEVEL DIMENTION:{}'.format(slide.level_dimensions))
-
+            # print('LEVEL DIMENTION:{}'.format(slide.level_dimensions))
             self.scan_region(sess, slide, site_name, patient_id, file_name, output_file,
                              image_tensor, detection_boxes, detection_scores, detection_classes, num_detections)
+        '''
 
+    def scan_region_from_image(self, sess, img, site_name, patient_id, file_name, output_file,
+                               image_tensor, detection_boxes, detection_scores, detection_classes, num_detections):
 
-    def scan_region(self, sess, slide, site_name, patient_id, file_name, output_file,
-                    image_tensor, detection_boxes, detection_scores, detection_classes, num_detections):
-        width, height = slide.dimensions
-        # print('W: ' + str(width) + '    H: ' + str(height))
-
-        '''pixelあたりの大きさ(micrometre)'''
-        mpp_x = float(slide.properties[openslide.PROPERTY_NAME_MPP_X])
-        mpp_y = float(slide.properties[openslide.PROPERTY_NAME_MPP_Y])
-
-        base_objective_power = int(slide.properties[openslide.PROPERTY_NAME_OBJECTIVE_POWER])
-
-        print('MPP: x:{}, y:{}'.format(mpp_x, mpp_y))
-        print('Base Object Power: {}'.format(base_objective_power))
-
-        '''切り出す窓サイズ(pixel単位)'''
-        WINDOW_X_ORG = float(self.STD_SIZE) / mpp_x
-        WINDOW_Y_ORG = float(self.STD_SIZE) / mpp_y
-
-        # '''base_objective_powerが40の場合はlevelを一つ落とす'''
-        # target_level = 0
-        # if base_objective_power == 40:
-        #     target_level = 1
-
-        '''対物倍率40倍の場合は level3(8倍), 対物倍率20倍の場合は level2(4倍) で切り出す'''
-        target_level = 3  # 対物倍率が40でない場合はlevel2を選択することにする
-        if base_objective_power != 40:
-            target_level = 2
-
-        reduction = slide.level_downsamples[target_level]
-        # objective_power = int(float(slide.properties[openslide.PROPERTY_NAME_OBJECTIVE_POWER]) / reduction)
+        '''切り出す窓サイズ(最大画素ベース)(pixel単位)'''
+        window_x_org = float(self.STD_SIZE) / self.mpp_x
+        window_y_org = float(self.STD_SIZE) / self.mpp_y
 
         '''切り出しが何回必要なのか（元のサイズを窓サイズで割って、重複比率で割って、天井関数に掛ける）'''
-        X_SPLIT_SIZE = int(math.ceil(width / WINDOW_X_ORG / (1.0 - self.OVERLAP_RATIO)))
-        Y_SPLIT_SIZE = int(math.ceil(height / WINDOW_Y_ORG / (1.0 - self.OVERLAP_RATIO)))
+        x_split_size = int(math.ceil(self.org_slide_width / window_x_org / (1.0 - self.OVERLAP_RATIO)))
+        y_split_size = int(math.ceil(self.org_slide_height / window_y_org / (1.0 - self.OVERLAP_RATIO)))
 
         '''ダウンサンプルを考慮した切り出す窓サイズ'''
-        WINDOW_X = int(math.ceil(WINDOW_X_ORG / reduction))
-        WINDOW_Y = int(math.ceil(WINDOW_Y_ORG / reduction))
+        window_x = int(math.ceil(window_x_org / self.slide_downsample))
+        window_y = int(math.ceil(window_y_org / self.slide_downsample))
 
-        print('WINDOW X SIZE: ' + str(WINDOW_X))
-        print('WINDOW Y SIZE: ' + str(WINDOW_Y))
+        print('WINDOW X SIZE: ' + str(window_x))
+        print('WINDOW Y SIZE: ' + str(window_y))
 
         '''切り出す窓のスライド量(pixel単位)'''
-        '''注意：スライド幅は最上位レベルのpixel幅で指定する'''
-        slide_WINDOW_X = int(WINDOW_X_ORG * (1.0 - self.OVERLAP_RATIO))
-        slide_WINDOW_Y = int(WINDOW_Y_ORG * (1.0 - self.OVERLAP_RATIO))
+        slide_window_x = int(window_x * (1.0 - self.OVERLAP_RATIO))
+        slide_window_y = int(window_y * (1.0 - self.OVERLAP_RATIO))
 
         # for short test
         # for j in range(4, 6):
         #     for i in range(25, 35):
-        for j in range(0, Y_SPLIT_SIZE):
-            for i in range(0, X_SPLIT_SIZE):
-                x_start = slide_WINDOW_X * i
-                y_start = slide_WINDOW_Y * j
-                region = slide.read_region((x_start, y_start), target_level,
-                                           (WINDOW_X, WINDOW_Y))
+        for j in range(0, y_split_size):
+            for i in range(0, x_split_size):
+                x_start = slide_window_x * i
+                y_start = slide_window_y * j
+                x_end = x_start + window_x
+                y_end = y_start + window_y
+                region = img.crop((x_start, y_start, x_end, y_end))
                 im = np.asarray(region)
                 '''RGBA配列からAを削除する'''
-                im = np.delete(im, 3, 2)
+                # im = np.delete(im, 3, 2)
                 # '''BGR配列をRGB配列に変換する''' <- OpenSlide で　OpenCV を使っていると勘違いしていた。Pillowを使っているのでregionはRGBになっている。
                 # im = im[:, :, (2, 1, 0)]
 
                 '''検出処理を実行する'''
                 bs = self.detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections,
-                                     im, WINDOW_X, WINDOW_Y, thresh=self.CONF_THRESH)
+                                     im, window_x, window_y, thresh=self.CONF_THRESH)
                 if (len(bs) == 0):
                     print('X:{}, Y:{}'.format(i, j))
                 else:
                     for k in range(0, len(bs)):
                         print('X:{}, Y:{}, RECT:[{}, {}, {}, {}, {}]'.format(i, j,
-                                                                             x_start + bs[k][0] * reduction, y_start + bs[k][1] * reduction,
-                                                                             x_start + bs[k][2] * reduction, y_start + bs[k][3] * reduction, bs[k][4]))
+                                                                             x_start + bs[k][0] * self.slide_downsample,
+                                                                             y_start + bs[k][1] * self.slide_downsample,
+                                                                             x_start + bs[k][2] * self.slide_downsample,
+                                                                             y_start + bs[k][3] * self.slide_downsample,
+                                                                             bs[k][4]))
                         if (bs[k][4] > 0):
                             date_now = datetime.datetime.today()
-                            output_file.write('\"' + site_name + '\",\"' + patient_id + '\",\"' + file_name + '\",new,' + date_now.strftime('%Y-%m-%dT%H:%M:%S') + ','
-                                              + str(x_start + bs[k][0] * reduction) + ',' + str(y_start + bs[k][1] * reduction) + ','
-                                              + str(x_start + bs[k][2] * reduction) + ',' + str(y_start + bs[k][3] * reduction) + ',' + str(bs[k][4]) + '\n')
+                            output_file.write('\"' + site_name + '\",\"' + patient_id + '\",\"' + file_name + '\",new,'
+                                              + date_now.strftime('%Y-%m-%dT%H:%M:%S') + ','
+                                              + str(x_start + bs[k][0] * self.slide_downsample) + ','
+                                              + str(y_start + bs[k][1] * self.slide_downsample) + ','
+                                              + str(x_start + bs[k][2] * self.slide_downsample) + ','
+                                              + str(y_start + bs[k][3] * self.slide_downsample) + ','
+                                              + str(bs[k][4]) + '\n')
                             output_file.flush()
 
                         '''動作確認用
@@ -187,10 +216,11 @@ class GlomusDetector(GlomusHandler):
                             return
                         '''
 
-    """検出処理を実行する"""
-    def detect_box(self, sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections,
+    @staticmethod
+    def detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections,
                    im, WINDOW_X, WINDOW_Y, thresh=0.5):
 
+        """検出処理を実行する"""
         # scores, boxes = im_detect(sess, net, im)
         # Actual detection.
         # Expand dimensions since the model expects images to have shape: [1, None, None, 3]

@@ -1,15 +1,17 @@
-# coding=utf-8
+# Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
+# This software includes the work that is distributed in the Apache Licence 2.0.
 
 import csv
-# import datetime
 import os
 import argparse
-import openslide
+# import openslide
 from glomus_handler import get_staining_type
 import time
 
+
 class MargeOverlapedGlomusException(Exception):
     pass
+
 
 class MargeOverlapedGlomus(object):
     def __init__(self, staining_type, input_file, output_dir, training_type, conf_threshold, annotation_dir,
@@ -331,7 +333,7 @@ class MargeOverlapedGlomus(object):
             '''前に開いていたスライドを閉じる'''
             if not (self.slide is None):
                 self.slide.close()
-            self.slide = openslide.open_slide(file_path)
+            # self.slide = openslide.open_slide(file_path)
             '''pixelあたりの大きさ(micrometre)'''
             mpp_x = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_X])
             mpp_y = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_Y])
@@ -348,6 +350,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='MERGE_OVERLAPPED_GLOMUS')
     parser.add_argument('--staining', dest='staining', help="Please set --staining for 染色方法 like OPT_PAS", type=str,
                         default='OPT_PAS')
+    parser.add_argument('--target_list', dest='target_list', help="set target_list", type=str)
     parser.add_argument('--detected_list', dest='input_file', help="Please set --input_file", type=str,
                         default='/home/simamoto/work/tmp/ClippedGlomus/PAS')
     parser.add_argument('--output_dir', dest='output_dir', help="Please set --output_dir", type=str,
@@ -360,6 +363,7 @@ def parse_args():
     parser.add_argument('--overlap_threshold', dest='overlap_threshold', help="Please set --overlap_threshold", type=float)
 
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = parse_args()

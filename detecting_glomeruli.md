@@ -48,6 +48,7 @@
 
   ```
   python merge_overlaped_glomus.py \
+      --target_list=${TARGET_LIST} \
       --detected_list=${DETECTION_RESULT_FILE} \
       --data_dir=${DATA_DIR} \
       --staining=${STAINING} \
@@ -57,6 +58,7 @@
       --overlap_threshold=0.35
   ```
 
+  * Set ${TARGET_LIST} points to a path of text file in which the processing target is written.
   * Set ${DETECTION_RESULT_FILE} points to a path of the detection result file.
   * Set ${DATA_DIR} points to a path of the file folder in which there are whole slide images.
   * Set ${STAINING} points to a code of staining method from below.

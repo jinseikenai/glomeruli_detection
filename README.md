@@ -1,13 +1,7 @@
-# Faster R-CNN-Based Glomerular Detector
-**This Repository contains the Faster R-CNN-Based Glomerular Detector that detects glomeruli from multistained Whole Slide Images(WSIs) of human renal tissue sections.**
+# Glomeruli Detector
+**This site introduces an example of a glomeruli detector that detects glomeruli from Whole Slide Images.**
 
- In this implements, We use the *"[Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection)"*
- and it's pretrained network model named "Inception Resnet v2".
-
- For details of *"Faster R-CNN"* method, please see [here](https://arxiv.org/abs/1506.01497).
- And for details of *"Inception Resnet v2"*, please refer to [here](https://ai.googleblog.com/2016/08/improving-inception-and-image.html).
-
- This software includes the work that is distributed in the [Apache Licence 2.0](https://github.com/tensorflow/models/blob/master/LICENSE).
+We uses the [Faster RCNN](https://arxiv.org/abs/1506.01497) method and the [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) for its implementation.
 
 ## set up
 
