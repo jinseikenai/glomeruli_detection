@@ -1,5 +1,5 @@
 # Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
-# <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This program is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+# This software includes the work that is distributed in the Apache Licence 2.0.
 r"""
 This program is the main unit of Faster R-CNN-Based Glomerular Detector.
 This unit detect the reagions of glomeruli from multistained Whole Slide Images(WSIs) of human renal tissue sections.
@@ -194,19 +194,19 @@ class GlomusDetector(GlomusHandler):
                 else:
                     for k in range(0, len(bs)):
                         print('X:{}, Y:{}, RECT:[{}, {}, {}, {}, {}]'.format(i, j,
-                                                                             x_start + bs[k][0],
-                                                                             y_start + bs[k][1],
-                                                                             x_start + bs[k][2],
-                                                                             y_start + bs[k][3],
+                                                                             x_start + bs[k][0] * self.slide_downsample,
+                                                                             y_start + bs[k][1] * self.slide_downsample,
+                                                                             x_start + bs[k][2] * self.slide_downsample,
+                                                                             y_start + bs[k][3] * self.slide_downsample,
                                                                              bs[k][4]))
                         if (bs[k][4] > 0):
                             date_now = datetime.datetime.today()
                             output_file.write('\"' + site_name + '\",\"' + patient_id + '\",\"' + file_name + '\",new,'
                                               + date_now.strftime('%Y-%m-%dT%H:%M:%S') + ','
-                                              + str((x_start + bs[k][0]) * self.slide_downsample) + ','
-                                              + str((y_start + bs[k][1]) * self.slide_downsample) + ','
-                                              + str((x_start + bs[k][2]) * self.slide_downsample) + ','
-                                              + str((y_start + bs[k][3]) * self.slide_downsample) + ','
+                                              + str(x_start + bs[k][0] * self.slide_downsample) + ','
+                                              + str(y_start + bs[k][1] * self.slide_downsample) + ','
+                                              + str(x_start + bs[k][2] * self.slide_downsample) + ','
+                                              + str(y_start + bs[k][3] * self.slide_downsample) + ','
                                               + str(bs[k][4]) + '\n')
                             output_file.flush()
 

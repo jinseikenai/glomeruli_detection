@@ -1,9 +1,10 @@
 # Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
-# <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This program is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+# This software includes the work that is distributed in the Apache Licence 2.0.
 
 import csv
 import os
 import argparse
+# import openslide
 from glomus_handler import get_staining_type
 import time
 
@@ -41,41 +42,7 @@ class MargeOverlapedGlomus(object):
         self.MAX_GLOMUS_SIZE = 350.0
         self.MAX_GLOMUS_AREA = 300.0 * 300.0
 
-        '''target list の mpp 情報を記録しておくための辞書'''
-        self.target_list = {}
-
-    def run(self, target_list):
-        '''target list の mpp 情報を辞書に記録しておく'''
-        if os.path.isfile(target_list):
-            with open(target_list, 'r') as target_list_file:
-                lines = target_list_file.readlines()
-                for line in lines:
-                    line_parts = line.strip().split(',')
-                    if len(line_parts) < 7:
-                        # raise AttributeError('The format of the target_list is inappropriate.')
-                        org_slide_width = 0
-                        org_slide_height = 0
-                        org_slide_objective_power = 0.0
-                        slide_downsample = 0.0
-                        mpp_x = 0.0
-                        mpp_y = 0.0
-                    else:
-                        org_slide_width = int(line_parts[1])
-                        org_slide_height = int(line_parts[2])
-                        org_slide_objective_power = float(line_parts[3])
-                        slide_downsample = float(line_parts[4])
-                        mpp_x = float(line_parts[5])
-                        mpp_y = float(line_parts[6])
-
-                    line_parts = line_parts[0].split('/')
-                    image_file_id = line_parts[1]
-
-                    self.target_list[image_file_id] = {'org_slide_width': org_slide_width,
-                                                       'org_slide_height': org_slide_height,
-                                                       'org_slide_objective_power': org_slide_objective_power,
-                                                       'slide_downsample': slide_downsample,
-                                                       'mpp_x': mpp_x, 'mpp_y': mpp_y}
-
+    def run(self):
         with open(self.input_file, "r") as list_file:
             site_name = ''
             # data_date = '' # data_date の利用は廃止
@@ -361,14 +328,17 @@ class MargeOverlapedGlomus(object):
     '''
 
     def check_mpp(self, patient_id, file_name):
-        '''pixelあたりの大きさ(micrometre)'''
-        body, _ = os.path.splitext(file_name)
-        properties = self.target_list[body]
-        if properties is not None:
-            mpp_x = float(properties['mpp_x'])
-            mpp_y = float(properties['mpp_y'])
+        file_path = os.path.join(self.annotation_dir, self.staining_dir, patient_id, file_name)
+        if os.path.isfile(file_path):
+            '''前に開いていたスライドを閉じる'''
+            if not (self.slide is None):
+                self.slide.close()
+            # self.slide = openslide.open_slide(file_path)
+            '''pixelあたりの大きさ(micrometre)'''
+            mpp_x = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_X])
+            mpp_y = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_Y])
         else:
-            raise MargeOverlapedGlomusException('unknown target file name is given.')
+            raise MargeOverlapedGlomusException('オリジナルndpiファイルを開くことが出来ません。')
 
         return mpp_x, mpp_y
 
@@ -399,4 +369,4 @@ if __name__ == '__main__':
     args = parse_args()
     merger = MargeOverlapedGlomus(args.staining, args.input_file, args.output_dir, args.training_type, args.conf_threshold,
                                   args.annotation_dir, args.overlap_threshold)
-    merger.run(args.target_list)
+    merger.run()
