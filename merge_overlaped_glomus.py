@@ -1,11 +1,19 @@
 # Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
 # <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This program is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
-
+r"""
+This program is the second unit of Faster R-CNN-Based Glomerular Detector.
+This unit merge Overlapping Regions of detected glomeruli from multi-overlapping sliding windows of detectiong.
+This is the second step of the detection procedure as follows.
+  1. Glomeruli Detection
+  2. Merging Overlapping Regions
+  3. Evaluation and Visualization
+"""
 import csv
 import os
 import argparse
 from glomus_handler import get_staining_type
 import time
+import openslide
 
 
 class MargeOverlapedGlomusException(Exception):
@@ -361,14 +369,24 @@ class MargeOverlapedGlomus(object):
     '''
 
     def check_mpp(self, patient_id, file_name):
-        '''pixelあたりの大きさ(micrometre)'''
-        body, _ = os.path.splitext(file_name)
-        properties = self.target_list[body]
-        if properties is not None:
-            mpp_x = float(properties['mpp_x'])
-            mpp_y = float(properties['mpp_y'])
+        file_path = os.path.join(self.annotation_dir, self.staining_dir, patient_id, file_name)
+        if os.path.isfile(file_path):
+            '''前に開いていたスライドを閉じる'''
+            if not (self.slide is None):
+                self.slide.close()
+            self.slide = openslide.open_slide(file_path)
+            '''pixelあたりの大きさ(micrometre)'''
+            mpp_x = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_X])
+            mpp_y = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_Y])
         else:
-            raise MargeOverlapedGlomusException('unknown target file name is given.')
+            '''pixelあたりの大きさ(micrometre)'''
+            body, _ = os.path.splitext(file_name)
+            properties = self.target_list[body]
+            if properties is not None:
+                mpp_x = float(properties['mpp_x'])
+                mpp_y = float(properties['mpp_y'])
+            else:
+                raise MargeOverlapedGlomusException('unknown target file name is given.')
 
         return mpp_x, mpp_y
 

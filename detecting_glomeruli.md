@@ -108,5 +108,5 @@
   * If --no_save flag is set, the result image file is not saved.
   You should not set this flag if you want to save the result image file.
   
-  In this evaluation, the correct answer judgment threshold is set to "Intersection over Union(IoU) >= 0.5" of the ground truth(GT) and the detected boundary box
+  In this evaluation, the correct answer judgment threshold is set to "Intersection over Union(IoU) >= 0.5" (i.e. "--iou_threshold=0.5") of the ground truth(GT) and the detected boundary box
   according to the configuration of the [PASCAL VOC challenge](http://host.robots.ox.ac.uk/pascal/VOC/pubs/everingham10.pdf).

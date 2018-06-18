@@ -1,9 +1,9 @@
 # Copyright 2018 The University of Tokyo Hospital. All Rights Reserved.
 # <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This program is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 r"""
-This program is unit of compiling the result of Faster R-CNN-Based Glomerular Detector.
-This unit detect glomeruli from multistained Whole Slide Images(WSIs) of human renal tissue sections.
-This detector is the first step of the detection procedure as follows.
+This program is Evaluation unit of Faster R-CNN-Based Glomerular Detector.
+This unit evaluate detected results of glomeruli detection compare with GT and detected result.
+This evaluator is the 3'rd step of the detection procedure as follows.
   1. Glomeruli Detection
   2. Merging Overlapping Regions
   3. Evaluation and Visualization
@@ -100,7 +100,7 @@ class EvalRecallPrecision(AnnotationHandler):
                                     # print('{}:{}:{}').format(body_list[0][0], body_list[0][1], body_list[0][2])
                                     recall, recall_hit_num = self.check_recall_precision(slide_name_body, int(body_list[0][2]))
                                     '''ファイル名にカンマ","が入っているファイルが存在する->カンマを無視する'''
-                                    self.print_result_record(body.replace(',',''), recall, recall_hit_num,
+                                    self.print_result_record(body.replace(',', ''), recall, recall_hit_num,
                                                              str(len(self.gt_list)),
                                                              str(len(self.detected_glomus_list[slide_name_body])))
 
@@ -122,11 +122,6 @@ class EvalRecallPrecision(AnnotationHandler):
     """正解例に対するrecall/precisionを求める"""
     def check_recall_precision(self, file_key, times):
         """正解例に対するrecall/precisionを求める"""
-        # print(self.detected_glomus_list[file_key])
-        # fig, ax = plt.subplots(figsize=(math.ceil(float(self.image.shape[1])/100.0), math.ceil(float(self.image.shape[0])/100.0)))
-        # ax.imshow(self.image, aspect='equal')
-        # fig.set_figheight(round(float(self.image.shape[1])/100.0))
-        # fig.set_figwidth(round(float(self.image.shape[0])/100.0))
 
         '''糸球体領域の描画準備'''
         if not self.no_save:

@@ -17,12 +17,20 @@ import datetime
 import time
 from glomus_handler import GlomusHandler, get_staining_type
 from PIL import Image
+import openslide
 
 
 class GlomusDetector(GlomusHandler):
     """バーチャルスライドから糸球体を検出する処理を担うクラス"""
     def __init__(self, data_category, args):
-        """糸球体検出処理クラスの初期化"""
+        """Initializer"""
+
+        '''identifier of a image file type'''
+        self.ndpi_image_ext = ['.ndpi']
+        self.png_image_ext = ['.PNG', '.png']
+        self.image_type = None
+
+        '''糸球体検出処理クラスの初期化'''
         self.data_category = data_category
         '''データカテゴリに応じて対象ファイル識別パターンを設定する(set_typeはGlomusHanderで定義されている）'''
         self.set_type(data_category)
@@ -98,21 +106,28 @@ class GlomusDetector(GlomusHandler):
 
                             line_parts = line_parts[0].split('/')
                             # data_date = line_parts[0] # data_date は利用しないように変更
-                            patient_id = line_parts[0]
-                            if patient_id.startswith('#'):
+                            specimen_id = line_parts[0]
+                            if specimen_id.startswith('#'):
                                 '''# 始まりの場合はコメントとしてパスする'''
                                 pass
                             else:
                                 file_name = line_parts[1] #.decode('utf-8')
 
                                 '''ターゲットファイルを取得する'''
-                                target_file_path = os.path.join(args.target_dir, self.staining_dir, patient_id)
+                                target_file_path = os.path.join(args.target_dir, self.staining_dir, specimen_id)
                                 if os.path.isdir(target_file_path):
                                     for candidate in os.listdir(target_file_path):
                                         candidate_body, ext = os.path.splitext(candidate)
-                                        if file_name.find(candidate_body) >= 0 and ext == '.PNG':
+                                        if file_name.find(candidate_body) >= 0 and ext in self.ndpi_image_ext:
+                                            self.image_type = 'ndpi'
+                                        elif file_name.find(candidate_body) >= 0 and ext in self.png_image_ext:
+                                            self.image_type = 'png'
+                                        else:
+                                            self.image_type = None
+
+                                        if self.image_type is not None:
                                             start_time = time.time()
-                                            self.split(sess, site_name, self.staining_dir, patient_id, candidate, output_file,
+                                            self.split(sess, site_name, self.staining_dir, specimen_id, candidate, output_file,
                                                        image_tensor, detection_boxes, detection_scores, detection_classes,
                                                        num_detections)
                                             duration = time.time() - start_time
@@ -120,35 +135,18 @@ class GlomusDetector(GlomusHandler):
                                             log_file.flush()
                                             break
 
-                                    #     candidate_body = candidate_body.replace(' ', '') # .decode('utf-8')
-                                    #     if file_name.find(candidate_body) >= 0 and ext == '.ndpi':
-                                    #         print(file_name)
-                                    #         start_time = time.time()
-                                    #         '''出力ファイル名の基本部分を作る（後ろにx, y の通し番号をつけることになる）'''
-                                    #         self.split(sess, site_name, self.staining_dir, patient_id, candidate, output_file,
-                                    #                    image_tensor, detection_boxes, detection_scores, detection_classes,
-                                    #                    num_detections)
-                                    #         duration = time.time() - start_time
-                                    #         log_file.write('"{}",{}\n'.format(file_name, duration))
-                                    #         log_file.flush()
-                                    #         break
-
     def split(self, sess, site_name, staining_dir, patient_id, file_name, output_file,
               image_tensor, detection_boxes, detection_scores, detection_classes, num_detections):
-        with Image.open(os.path.join(self.args.target_dir, staining_dir, patient_id, file_name)) as img:
-            self.scan_region_from_image(sess, img, site_name, patient_id, file_name, output_file,
-                             image_tensor, detection_boxes, detection_scores, detection_classes, num_detections)
+        if self.image_type == 'png':
+            with Image.open(os.path.join(self.args.target_dir, staining_dir, patient_id, file_name)) as img:
+                self.scan_region_from_image(sess, img, site_name, patient_id, file_name, output_file,
+                                 image_tensor, detection_boxes, detection_scores, detection_classes, num_detections)
+        else:
+            with openslide.open_slide(os.path.join(self.args.target_dir, staining_dir, patient_id, file_name)) as slide:
+                self.scan_region(sess, slide, site_name, patient_id, file_name, output_file,
+                                 image_tensor, detection_boxes, detection_scores, detection_classes, num_detections)
 
-        '''
-        with openslide.open_slide(os.path.join(self.args.target_dir, staining_dir, patient_id, file_name)) as slide:
-            ## print(slide.properties)
-            # print('LEVEL:{}'.format(slide.level_count))
-            # print('LEVEL DIMENTION:{}'.format(slide.level_dimensions))
-            self.scan_region(sess, slide, site_name, patient_id, file_name, output_file,
-                             image_tensor, detection_boxes, detection_scores, detection_classes, num_detections)
-        '''
-
-    def scan_region_from_image(self, sess, img, site_name, patient_id, file_name, output_file,
+    def scan_region_from_image(self, sess, img, site_name, specimen_id, file_name, output_file,
                                image_tensor, detection_boxes, detection_scores, detection_classes, num_detections):
 
         '''切り出す窓サイズ(最大画素ベース)(pixel単位)'''
@@ -156,8 +154,8 @@ class GlomusDetector(GlomusHandler):
         window_y_org = float(self.STD_SIZE) / self.mpp_y
 
         '''切り出しが何回必要なのか（元のサイズを窓サイズで割って、重複比率で割って、天井関数に掛ける）'''
-        x_split_size = int(math.ceil(self.org_slide_width / window_x_org / (1.0 - self.OVERLAP_RATIO)))
-        y_split_size = int(math.ceil(self.org_slide_height / window_y_org / (1.0 - self.OVERLAP_RATIO)))
+        x_split_times = int(math.ceil(self.org_slide_width / window_x_org / (1.0 - self.OVERLAP_RATIO)))
+        y_split_times = int(math.ceil(self.org_slide_height / window_y_org / (1.0 - self.OVERLAP_RATIO)))
 
         '''ダウンサンプルを考慮した切り出す窓サイズ'''
         window_x = int(math.ceil(window_x_org / self.slide_downsample))
@@ -173,48 +171,104 @@ class GlomusDetector(GlomusHandler):
         # for short test
         # for j in range(4, 6):
         #     for i in range(25, 35):
-        for j in range(0, y_split_size):
-            for i in range(0, x_split_size):
+        for j in range(0, y_split_times):
+            for i in range(0, x_split_times):
                 x_start = slide_window_x * i
                 y_start = slide_window_y * j
                 x_end = x_start + window_x
                 y_end = y_start + window_y
                 region = img.crop((x_start, y_start, x_end, y_end))
                 im = np.asarray(region)
-                '''RGBA配列からAを削除する'''
-                # im = np.delete(im, 3, 2)
-                # '''BGR配列をRGB配列に変換する''' <- OpenSlide で　OpenCV を使っていると勘違いしていた。Pillowを使っているのでregionはRGBになっている。
-                # im = im[:, :, (2, 1, 0)]
 
                 '''検出処理を実行する'''
                 bs = self.detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections,
                                      im, window_x, window_y, thresh=self.CONF_THRESH)
-                if (len(bs) == 0):
-                    print('X:{}, Y:{}'.format(i, j))
-                else:
-                    for k in range(0, len(bs)):
-                        print('X:{}, Y:{}, RECT:[{}, {}, {}, {}, {}]'.format(i, j,
-                                                                             x_start + bs[k][0],
-                                                                             y_start + bs[k][1],
-                                                                             x_start + bs[k][2],
-                                                                             y_start + bs[k][3],
-                                                                             bs[k][4]))
-                        if (bs[k][4] > 0):
-                            date_now = datetime.datetime.today()
-                            output_file.write('\"' + site_name + '\",\"' + patient_id + '\",\"' + file_name + '\",new,'
-                                              + date_now.strftime('%Y-%m-%dT%H:%M:%S') + ','
-                                              + str((x_start + bs[k][0]) * self.slide_downsample) + ','
-                                              + str((y_start + bs[k][1]) * self.slide_downsample) + ','
-                                              + str((x_start + bs[k][2]) * self.slide_downsample) + ','
-                                              + str((y_start + bs[k][3]) * self.slide_downsample) + ','
-                                              + str(bs[k][4]) + '\n')
-                            output_file.flush()
 
-                        '''動作確認用
-                        if (bs[k][4] > 0):
-                            region.show()
-                            return
-                        '''
+                self.write_detected_result(bs, i, j, x_start * self.slide_downsample, y_start * self.slide_downsample,
+                                           output_file, site_name, specimen_id, file_name)
+
+    def write_detected_result(self, bs, i, j, x_start, y_start, output_file, site_name, specimen_id, file_name):
+        if len(bs) == 0:
+            print('X:{}, Y:{}'.format(i, j))
+        else:
+            for k in range(0, len(bs)):
+                print('X:{}, Y:{}, RECT:[{}, {}, {}, {}, {}]'.format(i, j,
+                                                                     x_start + (bs[k][0] * self.slide_downsample),
+                                                                     y_start + (bs[k][1] * self.slide_downsample),
+                                                                     x_start + (bs[k][2] * self.slide_downsample),
+                                                                     y_start + (bs[k][3] * self.slide_downsample),
+                                                                     bs[k][4]))
+                if bs[k][4] > 0:
+                    date_now = datetime.datetime.today()
+                    output_file.write('\"' + site_name + '\",\"' + specimen_id + '\",\"' + file_name + '\",new,'
+                                      + date_now.strftime('%Y-%m-%dT%H:%M:%S') + ','
+                                      + str(x_start + (bs[k][0] * self.slide_downsample)) + ','
+                                      + str(y_start + (bs[k][1] * self.slide_downsample)) + ','
+                                      + str(x_start + (bs[k][2] * self.slide_downsample)) + ','
+                                      + str(y_start + (bs[k][3] * self.slide_downsample)) + ','
+                                      + str(bs[k][4]) + '\n')
+                    output_file.flush()
+
+    def scan_region(self, sess, slide, site_name, specimen_id, file_name, output_file,
+                    image_tensor, detection_boxes, detection_scores, detection_classes, num_detections):
+        self.org_slide_width, self.org_slide_height = slide.dimensions
+        # print('W: ' + str(width) + '    H: ' + str(height))
+
+        '''pixelあたりの大きさ(micrometre)'''
+        self.mpp_x = float(slide.properties[openslide.PROPERTY_NAME_MPP_X])
+        self.mpp_y = float(slide.properties[openslide.PROPERTY_NAME_MPP_Y])
+
+        self.org_slide_objective_power = int(slide.properties[openslide.PROPERTY_NAME_OBJECTIVE_POWER])
+
+        '''切り出す窓サイズ(pixel単位)'''
+        window_x_org = float(self.STD_SIZE) / self.mpp_x
+        window_y_org = float(self.STD_SIZE) / self.mpp_y
+
+        '''Decide the level so that the objective magnification is 5 times'''
+        self.slide_downsample = 8.0
+        target_level = 3
+        for level, downsample in enumerate(slide.level_downsamples):
+            if self.org_slide_objective_power / downsample <= 5.0:
+                target_level = level
+                self.slide_downsample = slide.level_downsamples[level]
+                break
+
+        '''切り出しが何回必要なのか（元のサイズを窓サイズで割って、重複比率で割って、天井関数に掛ける）'''
+        x_split_times = int(math.ceil(self.org_slide_width / window_x_org / (1.0 - self.OVERLAP_RATIO)))
+        y_split_times = int(math.ceil(self.org_slide_height / window_y_org / (1.0 - self.OVERLAP_RATIO)))
+
+        '''ダウンサンプルを考慮した切り出す窓サイズ'''
+        window_x = int(math.ceil(window_x_org / self.slide_downsample))
+        window_y = int(math.ceil(window_y_org / self.slide_downsample))
+
+        print('WINDOW X SIZE: ' + str(window_x))
+        print('WINDOW Y SIZE: ' + str(window_y))
+
+        '''切り出す窓のスライド量(pixel単位)'''
+        '''注意：スライド幅は最上位レベルのpixel幅で指定する'''
+        slide_window_x = int(window_x_org * (1.0 - self.OVERLAP_RATIO))
+        slide_window_y = int(window_y_org * (1.0 - self.OVERLAP_RATIO))
+
+        # for short test
+        # for j in range(4, 6):
+        #     for i in range(25, 35):
+        for j in range(0, y_split_times):
+            for i in range(0, x_split_times):
+                x_start = slide_window_x * i
+                y_start = slide_window_y * j
+                region = slide.read_region((x_start, y_start), target_level,
+                                           (window_x, window_y))
+                im = np.asarray(region)
+                '''RGBA配列からAを削除する'''
+                im = np.delete(im, 3, 2)
+                # '''BGR配列をRGB配列に変換する''' <- OpenSlide で　OpenCV を使っていると勘違いしていた。Pillowを使っているのでregionはRGBになっている。
+                # im = im[:, :, (2, 1, 0)]
+
+                '''検出処理を実行する'''
+                bs = self.detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes,
+                                     num_detections, im, window_x, window_y, thresh=self.CONF_THRESH)
+                self.write_detected_result(bs, i, j, x_start, y_start,
+                                           output_file, site_name, specimen_id, file_name)
 
     @staticmethod
     def detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections,
@@ -266,7 +320,6 @@ def parse_args():
     :return: args
     '''
     parser = argparse.ArgumentParser(description='Load RoI')
-    parser.add_argument('--network', dest='network', help="set network", type=str, default="VGGnet_test")
     parser.add_argument('--model', dest='model', help="set learned model", type=str)
     parser.add_argument('--target_list', dest='target_list', help="set target_list", type=str)
     parser.add_argument('--data_dir', dest='target_dir', help="set data_dir", type=str)
