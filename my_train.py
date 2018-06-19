@@ -1,4 +1,6 @@
 # This program is a minor modification of models/research/object_detection/train.py program.
+# Please check the original source code of the latest version.
+#
 # The copyright of the original program is as follows.
 #
 # Copyright 2017 The TensorFlow Authors. All Rights Reserved.
@@ -50,7 +52,8 @@ import os
 import tensorflow as tf
 
 # from object_detection import trainer
-import my_trainer
+# import my_trainer
+from object_detection import trainer
 from object_detection.builders import input_reader_builder
 from object_detection.builders import model_builder
 from object_detection.utils import config_util
@@ -160,9 +163,9 @@ def main(_):
         is_chief = (task_info.type == 'master')
         master = server.target
 
-    my_trainer.train(create_input_dict_fn, model_fn, train_config, master, task,
-                     FLAGS.num_clones, worker_replicas, FLAGS.clone_on_cpu, ps_tasks,
-                     worker_job_name, is_chief, FLAGS.train_dir, FLAGS.gpu_list)
+    trainer.train(create_input_dict_fn, model_fn, train_config, master, task,
+                  FLAGS.num_clones, worker_replicas, FLAGS.clone_on_cpu, ps_tasks,
+                  worker_job_name, is_chief, FLAGS.train_dir) # , FLAGS.gpu_list)
 
 
 if __name__ == '__main__':

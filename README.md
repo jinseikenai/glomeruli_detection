@@ -107,6 +107,9 @@ Please set up by the following procedure.
     * glomerulus_train.config
     * input.config
   * Set the GPU list you can use to ${GPU} like "--gpu_list=0,1" or "--gpu_list=1".
+  
+  If you get the error message of "ValueError: Tried to convert 't' to a tensor and failed. Error: Argument must be a dense tensor: range(0, 3) - got shape [3], but wanted [].",
+  Please check [here](https://github.com/tensorflow/models/issues/3752) and [here](https://github.com/tensorflow/models/issues/3705#issuecomment-375563179).
 
 ## List of programs
 
