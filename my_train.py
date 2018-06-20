@@ -1,5 +1,5 @@
-# This program is a minor modification of models/research/object_detection/train.py program.
-# Please check the original source code of the latest version.
+# This program is almost the same as the original models/research/object_detection/train.py program.
+# Please check the original latest source code to adapt to the latest Tensorflow Object Detection API.
 #
 # The copyright of the original program is as follows.
 #

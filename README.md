@@ -116,11 +116,14 @@ Please set up by the following procedure.
   Here is the list of programs included in this repository listed by its function.  
 
 * Glomeruli Detection Programs
-  1. detection : detect_glomus_test.py
-  2. merging overlapping regions : merge_overlaped_glomus.py
-  3. evaluation and visualization : eval_recall_precision_test.py
-  * common function : annotation_handler.py, glomus_handler.py
+  1. detection : [detect_glomus_test.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/detect_glomus_test.py)
+  2. merging overlapping regions : [merge_overlaped_glomus.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/merge_overlaped_glomus.py)
+  3. evaluation and visualization : [eval_recall_precision_test.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/eval_recall_precision_test.py)
+  * common function : [annotation_handler.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/annotation_handler.py), [glomus_handler.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/glomus_handler.py)
 
 * Transfer Learning / Additional Learning Programs
-  1. learning: my_train.py call my_trainer.py
+  1. learning: [my_train.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/my_train.py) call [my_trainer.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/my_trainer.py)
+      
+      These programs for learning are slmost the same as the original models/research/object_detection/train.py program.
+      Please check the original latest source code to adapt to the latest Tensorflow Object Detection API.
 

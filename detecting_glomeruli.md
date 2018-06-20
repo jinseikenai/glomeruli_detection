@@ -39,8 +39,8 @@
     * OPT_MT
     * OPT_Azan
 
-  * Set ${OUTPUT_DIR} points to a path of the file folder in which this process write a output file to .
-  * Set ${FILE_EXTENSON} for distinguishing execution results. It is added to the result file name.
+  * Set ${OUTPUT_DIR} points to a path of the file folder in which this process write output files.
+  * Set ${FILE_EXTENSON} for distinguishing execution results. It is added to the tail of result file name.
   * Set ${MODEL_PATH} points to a path of the model file used for detection. You should put a tensorflow's frozen_inference_graph.pb under this path.
   * Set --window_size points to the size(width and height) of sliding window for detection.
   The unit of size(width and height) is micrometer.

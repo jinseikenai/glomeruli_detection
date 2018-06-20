@@ -23,6 +23,7 @@ class MargeOverlapedGlomusException(Exception):
 class MargeOverlapedGlomus(object):
     def __init__(self, staining_type, input_file, output_dir, training_type, conf_threshold, annotation_dir,
                  overlap_threshod):
+        self.png = ['.png', '.PNG']
         self.rect_list = [[]]
         self.input_file = input_file
         self.output_dir = output_dir
@@ -369,8 +370,9 @@ class MargeOverlapedGlomus(object):
     '''
 
     def check_mpp(self, patient_id, file_name):
-        file_path = os.path.join(self.annotation_dir, self.staining_dir, patient_id, file_name)
-        if os.path.isfile(file_path):
+        body, ext = os.path.splitext(file_name)
+        if ext not in self.png:
+            file_path = os.path.join(self.annotation_dir, self.staining_dir, patient_id, file_name)
             '''前に開いていたスライドを閉じる'''
             if not (self.slide is None):
                 self.slide.close()
@@ -380,7 +382,6 @@ class MargeOverlapedGlomus(object):
             mpp_y = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_Y])
         else:
             '''pixelあたりの大きさ(micrometre)'''
-            body, _ = os.path.splitext(file_name)
             properties = self.target_list[body]
             if properties is not None:
                 mpp_x = float(properties['mpp_x'])
