@@ -15,7 +15,7 @@ import tensorflow as tf
 import numpy as np
 import datetime
 import time
-from glomus_handler import GlomusHandler, get_staining_type
+from glomus_handler import GlomusHandler
 from PIL import Image
 import openslide
 
@@ -64,7 +64,7 @@ class GlomusDetector(GlomusHandler):
         self.CLASSES = ('__background__',  # always index 0
                         'glomerulus')
 
-        self.staining_dir = get_staining_type(self.data_category)
+        self.staining_dir = GlomusHandler.get_staining_type(self.data_category)
         self.target_list = target_list
         self.data_dir = data_dir
 
@@ -214,6 +214,7 @@ class GlomusDetector(GlomusHandler):
         '''Calc info about the Sliding window'''
         window_x_org, window_y_org, x_split_times, y_split_times, window_x, window_y = self.calc_window_size()
 
+        '''Calculate slide size of the sliding window.(unit is pixel)'''
         slide_window_x = int(window_x * (1.0 - self.OVERLAP_RATIO))
         slide_window_y = int(window_y * (1.0 - self.OVERLAP_RATIO))
 
@@ -263,8 +264,7 @@ class GlomusDetector(GlomusHandler):
         '''Calc info about the Sliding window'''
         window_x_org, window_y_org, x_split_times, y_split_times, window_x, window_y = self.calc_window_size()
 
-        '''Calculate the slide width of the window by considering the downsampling rate.(unit is pixel)'''
-        '''切り出す窓のスライド量(pixel単位)'''
+        '''Calculate slide size of the sliding window.(unit is pixel)'''
         '''注意：スライド幅は最上位レベルのpixel幅で指定する'''
         slide_window_x = int(window_x_org * (1.0 - self.OVERLAP_RATIO))
         slide_window_y = int(window_y_org * (1.0 - self.OVERLAP_RATIO))
@@ -301,7 +301,7 @@ class GlomusDetector(GlomusHandler):
         x_split_times = int(math.ceil(self.org_slide_width / window_x_org / (1.0 - self.OVERLAP_RATIO)))
         y_split_times = int(math.ceil(self.org_slide_height / window_y_org / (1.0 - self.OVERLAP_RATIO)))
 
-        '''Calculate the slide width of the window by considering the downsampling rate.(unit is pixel)'''
+        '''Calculate the window size by considering the downsampling rate.(unit is pixel)'''
         window_x = int(math.ceil(window_x_org / self.slide_downsample))
         window_y = int(math.ceil(window_y_org / self.slide_downsample))
 
@@ -332,8 +332,21 @@ class GlomusDetector(GlomusHandler):
     @staticmethod
     def detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections,
                    im, WINDOW_X, WINDOW_Y, thresh=0.5):
+        """
+        Call the tensorflow's run method
+        :param sess:
+        :param image_tensor:
+        :param detection_boxes:
+        :param detection_scores:
+        :param detection_classes:
+        :param num_detections:
+        :param im:
+        :param WINDOW_X:
+        :param WINDOW_Y:
+        :param thresh:
+        :return: gt_bboxes_score_precision:
+        """
 
-        """検出処理を実行する"""
         # scores, boxes = im_detect(sess, net, im)
         # Actual detection.
         # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
@@ -342,18 +355,18 @@ class GlomusDetector(GlomusHandler):
             [detection_boxes, detection_scores, detection_classes, num_detections],
             feed_dict={image_tensor: image_np_expanded})
 
-        '''一度に処理する画像は1つだけ。無駄な1次元を削除しておく。'''
+        '''In this process, only one image is processed at one time, so first dimension is not usable.'''
         boxes = np.squeeze(boxes)
         classes = np.squeeze(classes).astype(np.int32)
         score = np.squeeze(scores)
 
-        '''閾値以上の結果だけを結果として採用する。'''
+        '''Adopt only results above the threshold.'''
         inds = np.where(score[:] >= thresh)[0]
         gt_bboxes_score_precision = [[0, 0, 0, 0, 0.0]] * len(inds)
 
-        '''推定結果のboxをリストする'''
+        '''List detecting result boxes.'''
         for i in range(0, len(inds)):
-            '''bboxの並びに注意する'''
+            '''Attention to the order of bbox array. It lined up as [ymin, xmin, ymax, xmax]'''
             ymin, xmin, ymax, xmax = boxes[i]
             gt_bboxes_score_precision[i] = [int(WINDOW_X * xmin), int(WINDOW_Y * ymin),
                                             int(WINDOW_X * xmax), int(WINDOW_Y * ymax), score[i]]
@@ -404,7 +417,7 @@ if __name__ == '__main__':
     body, ext = os.path.splitext(os.path.basename(args.target_list))
     TEST_SET = body
     TRAIN_SET = body.replace('test', 'train')
-    staining_dir = get_staining_type(args.data_category)
+    staining_dir = GlomusHandler.get_staining_type(args.data_category)
     TRAIN_MODEL = args.model
     PATH_TO_CKPT = os.path.join(args.model, TRAIN_MODEL, 'frozen_inference_graph.pb')
     '''Load Tensorflow Model into Memory'''
@@ -418,8 +431,8 @@ if __name__ == '__main__':
 
     # init session
     # sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
-    # FasterRCNN では c のライブラリを利用しているため visible_device_list の設定は効かない。
-    # GPUを制限するためには環境変数で CUDA_VISIBLE_DEVICES をセットする必要がある。
+    # The setting of visible_device_list does not work(?).
+    # If you want to limit the GPU to be used, set the environment variable CUDA_VISIBLE_DEVICES to limit it.
     tfConfig = tf.ConfigProto(allow_soft_placement=True,
                               gpu_options=tf.GPUOptions(per_process_gpu_memory_fraction=0.45, allow_growth=True
                                                         # , visible_device_list="0"

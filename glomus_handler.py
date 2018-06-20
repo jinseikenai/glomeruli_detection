@@ -14,7 +14,10 @@ class GlomusHanderException(Exception):
 
 
 class GlomusHandler(object):
-    '''データカテゴリに応じて対象ファイル識別パターンを設定する'''
+    """
+    Common class of handling stain slide images.
+    """
+    '''Set the file identification pattern corresponding to the image and stain type.'''
     def set_type(self, data_category):
 
         if data_category == 'OPT_PAM':
@@ -37,15 +40,20 @@ class GlomusHandler(object):
 
         self.repattern = re.compile(self.pattern, re.IGNORECASE)
 
-def get_staining_type(staining_type):
-    if staining_type == 'OPT_PAS':
-        return '02_PAS'
-    elif staining_type == 'OPT_PAM':
-        return '03_PAM'
-    elif staining_type == 'OPT_MT':
-        return '05_MT'
-    elif staining_type == 'OPT_Azan':
-        return '06_Azan'
-    else:
-        return ''
+    @staticmethod
+    def get_staining_type(staining_type):
+        """
+        :param staining_type:
+        :return: string of the serial number and string stand for staining method.
+        """
+        if staining_type == 'OPT_PAS':
+            return '02_PAS'
+        elif staining_type == 'OPT_PAM':
+            return '03_PAM'
+        elif staining_type == 'OPT_MT':
+            return '05_MT'
+        elif staining_type == 'OPT_Azan':
+            return '06_Azan'
+        else:
+            return ''
 

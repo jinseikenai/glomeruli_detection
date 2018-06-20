@@ -3,6 +3,7 @@
 import os
 import xml.etree.ElementTree as ElementTree
 import re
+from glomus_handler import GlomusHandler
 
 
 class AnnotationHandlerException(BaseException):
@@ -10,24 +11,34 @@ class AnnotationHandlerException(BaseException):
 
 
 class AnnotationHandler(object):
+    """
+    Common class of dealing with region annotations in Pascal VOC format.
+    """
     def __init__(self, annotation_dir, staining_type):
         self.gt_list = []
         self.gt_name_list = []
         self.annotation_dir = annotation_dir
         self.staining_type = staining_type
+        self.staining_dir = GlomusHandler.get_staining_type(self.staining_type)
+        if self.staining_dir is None:
+            raise AnnotationHandlerException('Unknown Augument is given.:' + self.staining_type)
 
         self.annotation_file_pattern = '(.*)_pw(\d{2})_ds(\d{1,2})'
         self.repattern = re.compile(self.annotation_file_pattern, re.IGNORECASE)
 
-        self.set_staining_type()
         self.set_sheet_index()
 
     def clear_annotation(self):
         del self.gt_list[:]
         del self.gt_name_list[:]
 
-    '''領域アノテーションファイルを読み込む'''
     def read_annotation(self, dir_path, file_name):
+        """
+        Read annotation file.
+        :param dir_path:
+        :param file_name:
+        :return: None
+        """
         tree = ElementTree.parse(os.path.join(dir_path, file_name))
         objs = tree.findall('object')
         for ix, obj in enumerate(objs):
@@ -45,19 +56,11 @@ class AnnotationHandler(object):
             else:
                 raise AnnotationHandlerException('Unknown object is found in:' + file_name)
 
-    def set_staining_type(self):
-        if self.staining_type == 'OPT_PAS':
-            self.staining_dir = '02_PAS'
-        elif self.staining_type == 'OPT_PAM':
-            self.staining_dir = '03_PAM'
-        elif self.staining_type == 'OPT_MT':
-            self.staining_dir = '05_MT'
-        elif self.staining_type == 'OPT_Azan':
-            self.staining_dir = '06_Azan'
-        else:
-            raise AnnotationHandlerException('Unknown Augument is given.:' + self.staining_type)
-
     def set_sheet_index(self):
+        """
+        This method is not used in the scope of this disclosure.
+        :return: int value of the sheet index of the annotation file.
+        """
         if self.staining_type == 'OPT_PAS':
             self.sheet_index = 0
         elif self.staining_type == 'OPT_PAM':
@@ -69,8 +72,14 @@ class AnnotationHandler(object):
         else:
             raise AnnotationHandlerException('Unknown Augument is given.:' + self.staining_type)
 
-    """2つの長方形のIoUを求める"""
-    def check_overlap(self, gt, ca):
+    @staticmethod
+    def check_overlap(gt, ca):
+        """
+        Calculate the IoU(Intersection over Union) value of two rectangles.
+        :param gt:
+        :param ca:
+        :return:
+        """
         dx = min(ca[2], gt[2]) - max(ca[0], gt[0])
         dy = min(ca[3], gt[3]) - max(ca[1], gt[1])
 
@@ -79,7 +88,7 @@ class AnnotationHandler(object):
         if (dx > 0) and (dy > 0):
             overlap = dx * dy
 
-        '''重複がある場合はIoU(Intersection over Union)を計算する'''
+        '''If there are overlapping region in two rectangles, calculate IoU.'''
         if overlap > 0:
             w_ca = ca[2] - ca[0]
             w_gt = gt[2] - gt[0]
@@ -96,15 +105,3 @@ class AnnotationHandler(object):
 
         return score
 
-
-def get_staining_type(staining_type):
-    if staining_type == 'OPT_PAS':
-        return '02_PAS'
-    elif staining_type == 'OPT_PAM':
-        return '03_PAM'
-    elif staining_type == 'OPT_MT':
-        return '05_MT'
-    elif staining_type == 'OPT_Azan':
-        return '06_Azan'
-    else:
-        return ''

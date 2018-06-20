@@ -11,7 +11,7 @@ This is the second step of the detection procedure as follows.
 import csv
 import os
 import argparse
-from glomus_handler import get_staining_type
+from glomus_handler import GlomusHandler
 import time
 import openslide
 
@@ -23,38 +23,47 @@ class MargeOverlapedGlomusException(Exception):
 class MargeOverlapedGlomus(object):
     def __init__(self, staining_type, input_file, output_dir, training_type, conf_threshold, annotation_dir,
                  overlap_threshod):
-        self.png = ['.png', '.PNG']
-        self.rect_list = [[]]
-        self.input_file = input_file
-        self.output_dir = output_dir
-        '''個別面積が共通面積の35%以上であれば共通化する'''
-        '''値は仮決め'''
+
+        '''Merge when common area ratio of two individual rectangles is this threshold or more.'''
         self.OVERLAP_THRESHOLD = overlap_threshod
-        '''両方のovelap比率が一定以上の場合には大きさに関係なくマージする'''
+        '''When the common area ratios for both rectangles are equal to or more than this value,
+        they are merged regardless of the size.'''
         self.UNCONDITIONAL_MERGE_THRESHOLD = 0.6
-        '''一方の辺がほぼ同じで場合には大きさに関係なくマージする'''
-        self.SIDE_LENGTH_MERGE_THRESHOLD = 30 # マイクロメートル
-        self.staining_type = staining_type
-        self.staining_dir = get_staining_type(staining_type)
-        self.training_type = training_type
+        '''If one side of rectangles is nearly the same, merge them regardless of their size.'''
+        self.SIDE_LENGTH_MERGE_THRESHOLD = 30 # unit is micrometer
 
-        self.CONF_THRESH = conf_threshold
-
-        '''mpp値のチェック用にOriginal画像を開くための変数'''
-        self.annotation_dir = annotation_dir
-        self.slide = None
-
-        '''糸球体は最大350マイクロメートルと想定する'''
+        '''The glomerulus diameter is assumed to be 350 micrometers at the maximum.
+        If the merge result exceeds the following value, do not merge them.'''
         #self.MAX_GLOMUS_SIZE = 240.0
         #self.MAX_GLOMUS_AREA = 220.0 * 220.0
         self.MAX_GLOMUS_SIZE = 350.0
         self.MAX_GLOMUS_AREA = 300.0 * 300.0
 
-        '''target list の mpp 情報を記録しておくための辞書'''
+        self.png = ['.png', '.PNG']
+        self.rect_list = [[]]
+        self.input_file = input_file
+        self.output_dir = output_dir
+
+        self.staining_type = staining_type
+        self.staining_dir = GlomusHandler.get_staining_type(staining_type)
+        self.training_type = training_type
+
+        self.CONF_THRESH = conf_threshold
+
+        self.annotation_dir = annotation_dir
+
+        '''variable for opening ndpi image file for mpp value check.'''
+        self.slide = None
+        '''variable for recording mpp value of PNG image recorded in the target list file.'''
         self.target_list = {}
 
     def run(self, target_list):
-        '''target list の mpp 情報を辞書に記録しておく'''
+        """
+        Main loop
+        :param target_list:
+        :return: None
+        """
+        '''If the slide is a PNG file, record the mpp information of the target file.'''
         if os.path.isfile(target_list):
             with open(target_list, 'r') as target_list_file:
                 lines = target_list_file.readlines()
@@ -87,34 +96,28 @@ class MargeOverlapedGlomus(object):
 
         with open(self.input_file, "r") as list_file:
             site_name = ''
-            # data_date = '' # data_date の利用は廃止
             patient_id = ''
             prev_file_name = ''
             reader = csv.reader(list_file)
             tmp_rect_list = []
-
-            '''処理手順を記録する都合上timestampは廃止する'''
-            # date_now = datetime.datetime.today()
-            # timestamp = date_now.strftime('%Y-%m-%dT%H%M')
 
             file_body = self.staining_type + '_GlomusMergedList_' + self.training_type
             log_file_path = os.path.join(self.output_dir, file_body + '_log.csv')
             merged_file_path = os.path.join(self.output_dir, file_body + '.csv')
             with open(merged_file_path, "w") as merged_file:
                 with open(log_file_path, "w") as log_file:
-                    '''処理時間を計測する'''
+                    '''for time record'''
                     start_time = time.time()
                     for row in reader:
-                        '''ファイルの切り替わりを検出する'''
-                        '''ファイルが切り換わったらoverlap検出も初期化する'''
-                        '''row[3]がファイル名'''
+                        '''Detect switching of files.'''
+                        '''When the file is switched,
+                        the precessing results are initialized to prepare for next file.'''
+                        '''row[2] is file name'''
                         if prev_file_name == '' or prev_file_name != row[2]:
-                            '''切り換わった段階で前のファイルの情報を出力する'''
+                            '''When the file is switched, output the processing result of the previous file.'''
                             if prev_file_name != '':
-                                '''スライド全部を一括してoverlapをチェックする'''
-                                '''その前にオリジナルスライドの mpp をチェックする'''
+                                '''Check overlap across the whole slide'''
                                 mpp_x, mpp_y = self.check_mpp(patient_id, prev_file_name)
-
                                 self.check_overlap_from_list(tmp_rect_list, mpp_x, mpp_y)
                                 for rect in self.rect_list:
                                     merged_file.write(site_name + ',' + patient_id + ',\"' + prev_file_name + '\",' +
@@ -124,7 +127,7 @@ class MargeOverlapedGlomus(object):
                                     merged_file.flush()
                                 print('"{}":{}').format(prev_file_name, self.rect_list)
 
-                                '''時間記録'''
+                                '''for time record'''
                                 duration = time.time() - start_time
                                 log_file.write('"{}",{}\n'.format(prev_file_name, duration))
                                 log_file.flush()
@@ -133,14 +136,14 @@ class MargeOverlapedGlomus(object):
                             site_name = row[0]
                             # data_date = row[1] # date_date の利用は廃止
                             patient_id = row[1]
-                            '''row[3]がファイル名'''
+                            '''row[2] is file name'''
                             prev_file_name = row[2]
-
 
                             del self.rect_list[:]
                             del tmp_rect_list[:]
 
-                        '''確信度がしきい値以上の場合のみ領域として採用する'''
+                        '''Only candidates whose confidence value is equal to or higher than the threshold
+                        are adopted as region candidates.'''
                         if float(row[9]) >= self.CONF_THRESH:
                             area = (float(row[7]) - float(row[5])) * (float(row[8]) - float(row[6]))
                             new_rect = list(map(float, row[5:10]))
@@ -152,8 +155,7 @@ class MargeOverlapedGlomus(object):
                             # check_overlap_from_list を用いる場合は個別にチェックしない
                             # self.check_overlap(new_rect)
 
-                    '''最後の周回の結果出力'''
-                    '''スライド全部を一括してoverlapをチェックする'''
+                    '''Output of the result of the last lap.'''
                     mpp_x, mpp_y = self.check_mpp(patient_id, prev_file_name)
                     self.check_overlap_from_list(tmp_rect_list, mpp_x, mpp_y)
                     for rect in self.rect_list:
@@ -164,7 +166,7 @@ class MargeOverlapedGlomus(object):
                         merged_file.flush()
                     print('{}:{}'.format(prev_file_name, self.rect_list))
 
-                    '''時間記録'''
+                    '''for time record'''
                     duration = time.time() - start_time
                     log_file.write('"{}",{}\n'.format(prev_file_name, duration))
                     log_file.flush()
