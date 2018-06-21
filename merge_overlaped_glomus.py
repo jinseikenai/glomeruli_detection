@@ -148,12 +148,9 @@ class MargeOverlapedGlomus(object):
                             area = (float(row[7]) - float(row[5])) * (float(row[8]) - float(row[6]))
                             new_rect = list(map(float, row[5:10]))
                             new_rect.append(area)
-                            '''overlap を書き込めるようにしておく'''
+                            '''preparation for writing overlap value'''
                             new_rect.append(0.0)
                             tmp_rect_list.append(new_rect)
-                            '''overlapをチェックする'''
-                            # check_overlap_from_list を用いる場合は個別にチェックしない
-                            # self.check_overlap(new_rect)
 
                     '''Output of the result of the last lap.'''
                     mpp_x, mpp_y = self.check_mpp(patient_id, prev_file_name)
@@ -171,77 +168,92 @@ class MargeOverlapedGlomus(object):
                     log_file.write('"{}",{}\n'.format(prev_file_name, duration))
                     log_file.flush()
 
-    '''スライド分を一括してoverlapをチェックする'''
     def check_overlap_from_list(self, tmp_rect_list, mpp_x, mpp_y):
-        '''一概には言えないが面積順にソートしておいた方が適切そう。（面積が大きい -> 糸球体全体を捉えている可能性大）'''
-        # tmp_rect_listをscore順にソートしておく
+        """
+        Check overlap across the whole slide
+        :param tmp_rect_list:
+        :param mpp_x:
+        :param mpp_y:
+        :return: None
+        """
+        '''Although it cannot be said unconditionally, it seems better tor sort by area.
+        （Hypotheses: it is likely that the larger one captures the entire glomerulus）'''
+        '''Other possibilities: the higher confidence suggests the higher adequacy.'''
         # tmp_rect_list = sorted(tmp_rect_list, key=lambda x:float(x[4]), reverse=True)
-        # tmp_rect_listを面積順にソートしておく
         tmp_rect_list = sorted(tmp_rect_list, key=lambda x:float(x[5]), reverse=True)
         # tmp_rect_list = sorted(tmp_rect_list, key=lambda x:float(x[5]))
         for rect in tmp_rect_list:
             self.check_overlap(rect, mpp_x, mpp_y)
 
-    '''overlapしたrectをマージする'''
     def check_overlap(self, new_rect, mpp_x, mpp_y):
+        """
+        Merge overlapped rectangles
+        :param new_rect:
+        :param mpp_x:
+        :param mpp_y:
+        :return: boolean value of indicating whether or not merged.
+        """
         new_rect_list = []
         mearged_flag = False
 
-        '''overlapを計算してoverlap順にソートしておく'''
+        '''Calculate teh overlap ratio and sort in the overlap ratio order.'''
         self.calc_overlap_all(new_rect)
         self.rect_list = sorted(self.rect_list, key=lambda x:float(x[6]), reverse=True)
 
         for rect in self.rect_list:
-            '''rect と new_rect のマージを試みる'''
+            '''Try to merge rect and new_rect.'''
             merged_rect = self.merge_rect(rect, new_rect, mpp_x, mpp_y)
-            '''重複比率が一定値未満でnew_rectの長辺がしきい値（マイクロメートル）を越える場合はそれ以上のマージを行わない'''
-            # if not(self.merge_decision(new_rect, mpp_x, mpp_y, overlap)):
-            #     merged_rect = None
 
             if not(merged_rect is None):
-                '''マージされたrectとさらに他のrectのマージ可能性をチェックする'''
+                '''Check the possibility that the merged rect can be merged with another rect.'''
                 tmp_merged_rect = self.recheck_overlap(new_rect_list, merged_rect, mpp_x, mpp_y)
                 if not(tmp_merged_rect is None):
                     merged_rect = tmp_merged_rect
 
-                '''マージされた領域を引き継ぐ'''
+                '''Save the merged rect.'''
                 new_rect_list.append(merged_rect)
                 mearged_flag = True
 
-                '''new_rectもmerged_rectにする'''
+                '''Replace the merged new_rect with merged_rect.'''
                 new_rect = merged_rect
 
             else:
-                '''既存 rect はそのまま引き継ぐ'''
+                '''Save the existing rect that was not merged.'''
                 new_rect_list.append(rect)
 
-        '''一度もマージされてなければ新規rectを rect_list に加える'''
+        '''If it has never been merged, add new_rect to rect_list.'''
         if not(mearged_flag):
             new_rect_list.append(new_rect)
 
         self.rect_list = new_rect_list
         return mearged_flag
 
-    '''self.rect_list に対する overlapを事前に計算しておく'''
     def calc_overlap_all(self, new_rect):
+        """
+        Calculate overlap ratio between the new_rect and all other rects.
+        :param new_rect:
+        :return: None
+        """
         for rect in self.rect_list:
             overlap_area = self.calc_overlap(new_rect, rect)
             '''overlap'''
             rect[6] = overlap_area
 
-    '''new_rectを作ったときに、再度、他の rect との重複をチェックする'''
     def recheck_overlap(self, new_rect_list, new_rect, mpp_x, mpp_y):
+        """
+        When new_rect is created, check overlap with other rect again.
+        :param new_rect_list:
+        :param new_rect:
+        :param mpp_x:
+        :param mpp_y:
+        :return: merged_rect: If there is nothing to merge, merged_rect will be None.
+        """
         merged_rect = None
         remove_index = []
         for i in range(0, len(new_rect_list)):
             rect = new_rect_list[i]
 
-            '''rect と new_rect のマージを試みる'''
             merged_rect = self.merge_rect(rect, new_rect, mpp_x, mpp_y)
-
-            '''重複比率が一定値未満でnew_rectの長辺がしきい値（マイクロメートル）を越える場合はそれ以上のマージを行わない'''
-            # if not(self.merge_decision(new_rect, mpp_x, mpp_y, overlap)):
-            #     merged_rect = None
 
             if not(merged_rect is None):
                 remove_index.append(i)
@@ -251,44 +263,39 @@ class MargeOverlapedGlomus(object):
 
         return merged_rect
 
-    '''重複があればマージする。重複が無ければ None を返す'''
     def merge_rect(self, rect, new_rect, mpp_x, mpp_y):
+        """
+        Merge if there is overlap above a certain amount.
+        :param rect:
+        :param new_rect:
+        :param mpp_x:
+        :param mpp_y:
+        :return: merged_rect: If there is nothing to merge, merged_rect will be None.
+        """
         merged_rect = None
 
-        '''新しいrectの右辺が既存rectの左辺よりも大きい and 新しいrectの左辺が既存rectの右辺よりも小さい
-         and
-         新しいrectの下辺が既存rectの上辺よりも大きい and 新しいrectの上辺が既存rectの上辺よりも小さい'''
         overlap_area = self.calc_overlap(new_rect, rect)
-        #overlap_area = self.calc_iou(new_rect, rect)
-        if  overlap_area > 0.0:
+        if overlap_area > 0.0:
 
-            '''個別面積を求める'''
             area1 = (rect[2] - rect[0]) * (rect[3] - rect[1])
             area2 = (new_rect[2] - new_rect[0]) * (new_rect[3] - new_rect[1])
 
-            '''集約判定を行う'''
             if self.merge_decision(rect, new_rect, area1, area2, overlap_area, mpp_x, mpp_y):
-            # if overlap >= self.OVERLAP_THRESHOLD:
-            # if False: # 集約しないテスト
                 new_x1 = min(new_rect[0], rect[0])
                 new_y1 = min(new_rect[1], rect[1])
                 new_x2 = max(new_rect[2], rect[2])
                 new_y2 = max(new_rect[3], rect[3])
 
-                '''確信度は大きい方を採用することにしてみる'''
-                merged_rect = [new_x1, new_y1, new_x2, new_y2, max(new_rect[4], rect[4]), (new_x2-new_x1) * (new_y2-new_y1), 0.0]
-
-                '''if (merged_rect[2] - merged_rect[0] > self.MAX_GLOMUS_SIZE / mpp_x)\
-                        or (merged_rect[3] - merged_rect[1] > self.MAX_GLOMUS_SIZE / mpp_y):
-                    merged_rect = None
-                '''
+                '''adopt the bigger confidence value.'''
+                merged_rect = [new_x1, new_y1, new_x2, new_y2, max(new_rect[4], rect[4]),
+                               (new_x2-new_x1) * (new_y2-new_y1), 0.0]
 
         return merged_rect
 
-    def calc_overlap(self, rect1, rect2):
+    @staticmethod
+    def calc_overlap(rect1, rect2):
         overlap_area = 0.0
         if (rect1[2] >= rect2[0] and rect1[0] <= rect2[2]) and (rect1[3] >= rect2[1] and rect1[1] <= rect2[3]):
-            '''共通面積を求める'''
             x1 = max(rect1[0], rect2[0])
             y1 = max(rect1[1], rect2[1])
             x2 = min(rect1[2], rect2[2])
@@ -297,42 +304,23 @@ class MargeOverlapedGlomus(object):
 
         return overlap_area
 
-    """2つの長方形のIoUを求める"""
-    def calc_iou(self, gt, ca):
-        dx = min(ca[2], gt[2]) - max(ca[0], gt[0])
-        dy = min(ca[3], gt[3]) - max(ca[1], gt[1])
-
-        overlap = 0.0
-        score = 0.0
-        if (dx > 0) and (dy > 0):
-            overlap = dx * dy
-
-        '''重複がある場合はIoU(Intersection over Union)を計算する'''
-        if overlap > 0:
-            w_ca = ca[2] - ca[0]
-            w_gt = gt[2] - gt[0]
-            h_ca = ca[3] - ca[1]
-            h_gt = gt[3] - gt[1]
-            assert w_ca > 0, 'candidate width has invalid value.'
-            assert w_gt > 0, 'gt width has invalid value.'
-            assert h_ca > 0, 'candidate height has invalid value.'
-            assert h_gt > 0, 'gt height has invalid value.'
-            area_ca = w_ca * h_ca
-            area_gt = w_gt * h_gt
-
-            score = overlap / (area_ca + area_gt - overlap)
-
-        return score
-
-    '''マージするか否かの判定を行う'''
     def merge_decision(self, rect1, rect2, area1, area2, overlap_area, mpp_x, mpp_y):
-        """"""
-        '''ほぼ同じ領域はマージする'''
+        """
+        Judging whether it is better to merge.
+        :param rect1:
+        :param rect2:
+        :param area1:
+        :param area2:
+        :param overlap_area:
+        :param mpp_x:
+        :param mpp_y:
+        :return: boolean: judgment result
+        """
+        '''merge the almost same areas'''
         if overlap_area >= area1 * self.UNCONDITIONAL_MERGE_THRESHOLD and overlap_area >= area2 * self.UNCONDITIONAL_MERGE_THRESHOLD:
-        # if overlap_area >= self.UNCONDITIONAL_MERGE_THRESHOLD:
             return True
 
-        '''一方の辺がほぼ同じで場合には大きさに関係なくマージする'''
+        '''merge if one side is nealy the same.'''
         if abs(rect1[0] - rect2[0]) * mpp_x < self.SIDE_LENGTH_MERGE_THRESHOLD and abs(rect1[2] - rect2[2]) * mpp_x < self.SIDE_LENGTH_MERGE_THRESHOLD \
                 and (abs(rect1[1] - rect2[1]) * mpp_y < self.SIDE_LENGTH_MERGE_THRESHOLD or abs(rect1[3] - rect2[3]) * mpp_y < self.SIDE_LENGTH_MERGE_THRESHOLD):
             return True
@@ -340,50 +328,31 @@ class MargeOverlapedGlomus(object):
                 and (abs(rect1[0] - rect2[0]) * mpp_x < self.SIDE_LENGTH_MERGE_THRESHOLD or abs(rect1[2] - rect2[2]) * mpp_x < self.SIDE_LENGTH_MERGE_THRESHOLD):
             return True
 
-        '''極端に大きな領域とはマージしない'''
+        '''We dose not merge with the extremely large area compared with regular size of the glomerulus.'''
         if max(rect1[2]-rect1[0], rect2[2]-rect2[0]) > self.MAX_GLOMUS_SIZE/mpp_x\
                 or max(rect1[3]-rect1[1], rect2[3]-rect2[1]) > self.MAX_GLOMUS_SIZE/mpp_y:
             return False
         if max(area1, area2) > self.MAX_GLOMUS_AREA/mpp_x/mpp_y:
             return False
 
-        '''一定以上含有される領域はマージする'''
+        '''merge areas containing more than a certain ratio.'''
         if max(overlap_area/area1, overlap_area/area2) >= self.OVERLAP_THRESHOLD:
-        # if overlap_area >= self.OVERLAP_THRESHOLD:
             return True
 
         return False
-
-    '''極端に大きな領域はマージしない
-    def merge_decision(self, new_rect, mpp_x, mpp_y, overlap):
-        long_side = new_rect[2] - new_rect[0]
-        mpp = mpp_x
-        if long_side < new_rect[3] - new_rect[1]:
-            long_side = new_rect[3] - new_rect[1]
-            mpp = mpp_y
-        long_side = long_side * mpp
-        if long_side > self.MAX_GLOMUS_SIZE:
-            return False
-        # if overlap >= self.UNCONDITIONAL_MERGE_THRESHOLD or long_side < self.MAX_GLOMUS_SIZE:
-        #     # overlap が 0.85 以上、または new_rectの長辺がしきい値（マイクロメートル）を未満の場合はマージを行う
-        #     return True
-
-        return True
-    '''
 
     def check_mpp(self, patient_id, file_name):
         body, ext = os.path.splitext(file_name)
         if ext not in self.png:
             file_path = os.path.join(self.annotation_dir, self.staining_dir, patient_id, file_name)
-            '''前に開いていたスライドを閉じる'''
+            '''close the slide previously opened'''
             if not (self.slide is None):
                 self.slide.close()
             self.slide = openslide.open_slide(file_path)
-            '''pixelあたりの大きさ(micrometre)'''
+            '''mpp indicates the number of pixels per micrometer.'''
             mpp_x = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_X])
             mpp_y = float(self.slide.properties[openslide.PROPERTY_NAME_MPP_Y])
         else:
-            '''pixelあたりの大きさ(micrometre)'''
             properties = self.target_list[body]
             if properties is not None:
                 mpp_x = float(properties['mpp_x'])

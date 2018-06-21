@@ -19,7 +19,8 @@ import re
 
 
 class EvalRecallPrecision(AnnotationHandler):
-    """領域アノテーションをスキャンするメソッドを提供する"""
+    """unit for the Result Evaluation and Visualization"""
+
     #font = ImageFont.truetype('FreeMono.ttf', 10)
     #font = ImageFont.truetype('NotoSansCJK-Bold.ttc', 12)
     font = ImageFont.truetype('DejaVuSans.ttf', 10)
@@ -45,7 +46,7 @@ class EvalRecallPrecision(AnnotationHandler):
 
         self.glomus_category = ['glomerulus', 'glomerulus-kana']
 
-        '''画像を保存しないフラグ'''
+        '''Flag indicating not saving visualization result.'''
         self.no_save = no_save
 
         self.target_list = target_list
@@ -54,14 +55,12 @@ class EvalRecallPrecision(AnnotationHandler):
 
     def scan_annotation_file(self):
         """
-        アノテーションファイルを見つけて
-        1. 糸球体領域の正解を読み込む。
-        2. 対応する糸球体領域検出結果を読み込む。
-        3. 1. 2. を比較して結果レポートを作成する。
+        Find the annotation file and do the following.
+        1. Read GT(correct answer) of glomerular region.
+        2. Read the glomeruli detection result file.
+        3. Compare 1. and 2. and create a result report.
         """
 
-        # for target in self.detected_glomus_list.keys():
-        #     print target
         self.print_header()
         with open(self.target_list, "r") as list_file:
             lines = list_file.readlines()
@@ -73,39 +72,35 @@ class EvalRecallPrecision(AnnotationHandler):
                 [patient_id, file_body] = lines[i].split(os.sep)
                 # print patient_id, file_body
                 annotation_dir = os.path.join(self.annotation_dir, self.staining_dir)
-        #if os.path.isdir(annotation_dir):
-            #for patient_id in self.detected_patient_id:
                 dir_path = os.path.join(annotation_dir, patient_id)
                 if os.path.isdir(dir_path):
-                    for file_name in os.listdir(os.path.join(dir_path,'annotations')):
-                        if os.path.isfile(os.path.join(os.path.join(dir_path,'annotations'), file_name)):
+                    for file_name in os.listdir(os.path.join(dir_path, 'annotations')):
+                        if os.path.isfile(os.path.join(os.path.join(dir_path, 'annotations'), file_name)):
                             body, ext = os.path.splitext(file_name)
                             if ext == '.xml' and file_name.find(self.staining_type) == 0:
                                 body_list = self.repattern.findall(body)
                                 slide_name_body = body_list[0][0].replace(self.staining_type + '_' + patient_id + '_', '')
-                                '''スライド名の先頭に日付情報が付与されていることがある（そういうフォーマットのアノテーションファイル名もある）。もし付与されていれば削除する。'''
+                                '''There are cases in which date information may be attached at the beginning of a slide name.
+                                If it is attached, delete it.'''
                                 slide_name_body_list = self.re_annotation_file_date_pattern.findall(slide_name_body)
                                 if len(slide_name_body_list) == 1:
                                     slide_name_body = slide_name_body_list[0]
                                 if slide_name_body in self.detected_glomus_list:
                                     del self.gt_list[:]
-                                    '''アノテーションファイルに対応する画像ファイルを読み込む'''
+                                    '''Read the image file corresponding to the annotation file.'''
                                     self.read_image(dir_path, body)
                                     try:
-                                        self.read_annotation(os.path.join(dir_path,'annotations'), file_name)
+                                        self.read_annotation(os.path.join(dir_path, 'annotations'), file_name)
                                         # print(self.gt_list)
                                     except ElementTree.ParseError as e:
                                         print('OOPS! {} is not well-formed:{}').format(file_name, e)
 
-                                    # print('{}:{}:{}').format(body_list[0][0], body_list[0][1], body_list[0][2])
                                     recall, recall_hit_num = self.check_recall_precision(slide_name_body, int(body_list[0][2]))
-                                    '''ファイル名にカンマ","が入っているファイルが存在する->カンマを無視する'''
+                                    '''Ignore commas if file name has commas.'''
                                     self.print_result_record(body.replace(',', ''), recall, recall_hit_num,
                                                              str(len(self.gt_list)),
                                                              str(len(self.detected_glomus_list[slide_name_body])))
 
-                                    '''画像記録'''
-                                    # plt.savefig(os.path.join(output_dir_path, body + '.PNG'))
                                     self.save_image(self.output_dir, body + '.PNG')
 
     def print_result_record(self, body, recall, recall_hit_num, num_gt, num_detected):
@@ -114,23 +109,21 @@ class EvalRecallPrecision(AnnotationHandler):
     def print_header(self):
         print('data,recall,recall_hit_num,gt_num,detect_num')
 
-    """画像をファイルに記録する"""
     def save_image(self, path, file_name):
         if not self.no_save:
             self.image.save(os.path.join(path, file_name))
 
-    """正解例に対するrecall/precisionを求める"""
     def check_recall_precision(self, file_key, times):
-        """正解例に対するrecall/precisionを求める"""
+        """Calculate the recall/precision"""
 
-        '''糸球体領域の描画準備'''
+        '''Preparation for drawing result.'''
         if not self.no_save:
-            '''透過を用いるためにRGBAにする'''
+            '''Convert to RGBA to use transparent mode'''
             draw = ImageDraw.Draw(self.image, 'RGBA')
         else:
             draw = None
 
-        '''recallチェック'''
+        '''Evaluate the recall'''
         gt_num = len(self.gt_list)
         recall_hit_num = 0
         index = -1
@@ -141,7 +134,7 @@ class EvalRecallPrecision(AnnotationHandler):
                 # draw.ink('#ffff00')
                 if not self.no_save:
                     draw.rectangle([gt[0], gt[1], gt[2], gt[3]], fill=None, outline='yellow')
-                # '''領域のラベルも書くようにする'''
+                # '''In the case of drawing label'''
                 # draw.text((gt[0], gt[1] - text_size), 'gt', fill='yellow')
                 gt = list(map(lambda x: x * times, gt))
                 iou_list = []
@@ -150,19 +143,16 @@ class EvalRecallPrecision(AnnotationHandler):
                     if iou >= self.iou_threshold:
                         iou_list.append(iou)
 
-                '''複数の detected rect と重複していることがある。
-                iouが最大の detected rect とだけ重複しているとみなす。'''
+                '''It may be overlapped with multiple detected rectangles.
+                In such case, the rectangle with max IoU is regarded as overlapping with it.'''
                 if len(iou_list) > 0:
-                    '''hitカウントを一つ上げる'''
                     recall_hit_num += 1
-                    # print('{}, {}, {}').format(gt, found_rect, iou)
+
         if not self.no_save:
-            '''precisionチェック'''
-            # print(len(self.detected_glomus_list[file_key]))
+            '''Evaluate the precision'''
             for found_rect in self.detected_glomus_list[file_key]:
                 rect = list(map(lambda x: x / times, found_rect))
                 draw.rectangle([rect[0], rect[1], rect[2], rect[3]], fill=None, outline='red')
-                '''領域のラベルも書くようにする'''
                 max_iou = 0.0
                 for gt in self.gt_list:
                     iou = self.check_overlap(gt, rect)
@@ -185,21 +175,15 @@ class EvalRecallPrecision(AnnotationHandler):
     def read_detected_glomus_list(self):
         with open(self.detect_list_file, "r") as list_file:
             file_body = ''
-            file_key = ''
             reader = csv.reader(list_file)
             for row in reader:
-                # body, ext = os.path.splitext(row[2].replace(' ', ''))
                 body = row[1].replace(' ', '')
                 if file_body != body:
                     file_body = body
-                    # file_key = body
                     self.detected_glomus_list[file_body] = []
                     self.detected_patient_id.append(row[1])
 
                 self.detected_glomus_list[file_body].append([int(row[3]), int(row[4]), int(row[5]), int(row[6]), float(row[7])])
-                # print(body)
-
-        # print(self.detected_glomus_list)
 
     """領域アノテーションの対象画像を読み込む"""
     def read_image(self, dir_path, body):

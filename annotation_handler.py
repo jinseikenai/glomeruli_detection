@@ -21,7 +21,7 @@ class AnnotationHandler(object):
         self.staining_type = staining_type
         self.staining_dir = GlomusHandler.get_staining_type(self.staining_type)
         if self.staining_dir is None:
-            raise AnnotationHandlerException('Unknown Augument is given.:' + self.staining_type)
+            raise AnnotationHandlerException('Unknown Argument is given.:' + self.staining_type)
 
         self.annotation_file_pattern = '(.*)_pw(\d{2})_ds(\d{1,2})'
         self.repattern = re.compile(self.annotation_file_pattern, re.IGNORECASE)
@@ -70,7 +70,7 @@ class AnnotationHandler(object):
         elif self.staining_type == 'OPT_Azan':
             self.sheet_index = 3
         else:
-            raise AnnotationHandlerException('Unknown Augument is given.:' + self.staining_type)
+            raise AnnotationHandlerException('Unknown Argument is given.:' + self.staining_type)
 
     @staticmethod
     def check_overlap(gt, ca):

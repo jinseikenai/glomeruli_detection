@@ -124,6 +124,6 @@ Please set up by the following procedure.
 * Transfer Learning / Additional Learning Programs
   1. learning: [my_train.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/my_train.py) call [my_trainer.py](https://github.com/jinseikenai/glomeruli_detection/blob/master/my_trainer.py)
       
-      These programs for learning are slmost the same as the original models/research/object_detection/train.py program.
+      These programs for learning are almost the same as the original models/research/object_detection/train.py program.
       Please check the original latest source code to adapt to the latest Tensorflow Object Detection API.
 

@@ -36,7 +36,7 @@ class GlomusHandler(object):
             self.TYPE = 'OPT_Azan'
             self.pattern = r'.*Azan.*\.ndpi'
         else:
-            raise GlomusHanderException('Unknown Augument is given.:' + data_category)
+            raise GlomusHanderException('Unknown Argument is given.:' + data_category)
 
         self.repattern = re.compile(self.pattern, re.IGNORECASE)
 
