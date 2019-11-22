@@ -125,7 +125,7 @@ class MargeOverlapedGlomus(object):
                                                       str(int(rect[2])) + ',' + str(int(rect[3])) + ',' +
                                                       str(rect[4]) + '\n')
                                     merged_file.flush()
-                                print('"{}":{}').format(prev_file_name, self.rect_list)
+                                print('"{}":{}'.format(prev_file_name, self.rect_list))
 
                                 '''for time record'''
                                 duration = time.time() - start_time
